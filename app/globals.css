@@ -163,9 +163,18 @@ td span {
 
 .rounded-lg strong {
   display: block;
-  margin-top: 0.35rem;
-  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  margin-top: 0.2rem;
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
   line-height: 1.1;
+}
+
+.rounded-lg:has(> p + strong) {
+  padding: 0.72rem 0.9rem;
+}
+
+.rounded-lg > p:first-child {
+  font-size: 0.66rem;
+  line-height: 1;
 }
 
 .rounded-lg strong.event-name {
