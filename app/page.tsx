@@ -383,7 +383,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bets-table-shell">
+              <div className="overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
@@ -401,20 +401,20 @@ export default function Home() {
                   <tbody>
                     {filteredBets.map((bet) => (
                       <tr key={bet.id}>
-                        <td data-label="Data">{bet.date}</td>
-                        <td data-label="Evento">
+                        <td>{bet.date}</td>
+                        <td>
                           <strong>{bet.event}</strong>
                           <span>{bet.market}</span>
                         </td>
-                        <td data-label="Bilhete">
+                        <td>
                           <TicketDetails bet={bet} />
                         </td>
-                        <td data-label="Tipo">{bet.type}</td>
-                        <td data-label="Odd">{bet.odd.toFixed(2)}</td>
-                        <td data-label="Stake">{currency.format(bet.stake)}</td>
-                        <td data-label="Resultado"><StatusBadge status={bet.status} /></td>
-                        <td data-label="Lucro" className={profitForBet(bet) >= 0 ? "positive" : "negative"}>{currency.format(profitForBet(bet))}</td>
-                        <td data-label="Acoes">
+                        <td>{bet.type}</td>
+                        <td>{bet.odd.toFixed(2)}</td>
+                        <td>{currency.format(bet.stake)}</td>
+                        <td><StatusBadge status={bet.status} /></td>
+                        <td className={profitForBet(bet) >= 0 ? "positive" : "negative"}>{currency.format(profitForBet(bet))}</td>
+                        <td>
                           <div className="row-actions">
                             <button onClick={() => updateStatus(bet.id, "won")} aria-label="Marcar green">G</button>
                             <button onClick={() => updateStatus(bet.id, "lost")} aria-label="Marcar red">R</button>
