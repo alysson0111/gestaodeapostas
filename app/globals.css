@@ -68,7 +68,7 @@ textarea:focus {
 
 table {
   width: 100%;
-  min-width: 860px;
+  min-width: 980px;
   border-collapse: collapse;
 }
 
@@ -175,6 +175,41 @@ td span {
   padding: 0.32rem 0.62rem;
   font-size: 0.74rem;
   font-weight: 800;
+}
+
+.ticket-details {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 150px;
+}
+
+.ticket-kind {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: #eef3ea;
+  color: #365144;
+  padding: 0.28rem 0.58rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.ticket-kind.multiple {
+  background: #e5f1ff;
+  color: #275b91;
+}
+
+.ticket-details ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1rem;
+  color: #526159;
+  font-size: 0.82rem;
+}
+
+.ticket-details li {
+  line-height: 1.25;
 }
 
 .status.won {

@@ -8,6 +8,8 @@ type Bet = {
   id: string;
   date: string;
   event: string;
+  ticketKind?: "single" | "multiple";
+  selections?: string[];
   market: string;
   type: string;
   odd: number;
@@ -39,6 +41,8 @@ const initialBets: Bet[] = [
     id: "demo-1",
     date: "2026-08-12",
     event: "Palmeiras x Bahia",
+    ticketKind: "single",
+    selections: ["Palmeiras x Bahia"],
     market: "Over 2.5 gols",
     type: "Gols",
     odd: 1.92,
@@ -50,6 +54,8 @@ const initialBets: Bet[] = [
     id: "demo-2",
     date: "2026-08-13",
     event: "Corinthians x Santos",
+    ticketKind: "single",
+    selections: ["Corinthians x Santos"],
     market: "Ambas marcam",
     type: "BTTS",
     odd: 2.1,
@@ -60,10 +66,12 @@ const initialBets: Bet[] = [
   {
     id: "demo-3",
     date: "2026-08-15",
-    event: "Flamengo x Gremio",
-    market: "Flamengo vence",
-    type: "Resultado",
-    odd: 1.68,
+    event: "Dupla brasileira",
+    ticketKind: "multiple",
+    selections: ["Flamengo vence", "Atletico-MG ou empate"],
+    market: "Dupla",
+    type: "Multipla",
+    odd: 2.42,
     stake: 60,
     status: "pending",
     notes: "Aguardando fechamento.",
@@ -76,10 +84,17 @@ function profitForBet(bet: Bet) {
   return 0;
 }
 
+function selectionsForBet(bet: Bet) {
+  if (bet.selections?.length) return bet.selections;
+  return bet.event ? [bet.event] : [];
+}
+
 function emptyForm() {
   return {
     date: new Date().toISOString().slice(0, 10),
     event: "",
+    ticketKind: "single" as "single" | "multiple",
+    selections: "",
     market: "",
     type: "Resultado",
     odd: "1.80",
@@ -172,15 +187,30 @@ export default function Home() {
     event.preventDefault();
     const odd = Number(form.odd);
     const stake = Number(form.stake);
-    if (!form.event.trim() || !form.market.trim() || odd <= 1 || stake <= 0) return;
+    const selections = form.selections
+      .split("\n")
+      .map((selection) => selection.trim())
+      .filter(Boolean);
+    const eventName =
+      form.ticketKind === "multiple"
+        ? form.event.trim() || `${selections.length} selecoes`
+        : form.event.trim();
+
+    if (!eventName || !form.market.trim() || odd <= 1 || stake <= 0) return;
+    if (form.ticketKind === "multiple" && selections.length < 2) return;
 
     setBets((current) => [
       {
         id: crypto.randomUUID(),
         date: form.date,
-        event: form.event.trim(),
+        event: eventName,
+        ticketKind: form.ticketKind,
+        selections: form.ticketKind === "multiple" ? selections : [eventName],
         market: form.market.trim(),
-        type: form.type.trim() || "Outros",
+        type:
+          form.ticketKind === "multiple" && form.type === "Resultado"
+            ? "Multipla"
+            : form.type.trim() || "Outros",
         odd,
         stake,
         status: form.status,
@@ -251,12 +281,47 @@ export default function Home() {
               <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
             </label>
             <label>
-              Evento
-              <input placeholder="Ex: Botafogo x Vasco" value={form.event} onChange={(event) => setForm({ ...form, event: event.target.value })} />
+              Formato do bilhete
+              <select
+                value={form.ticketKind}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    ticketKind: event.target.value as "single" | "multiple",
+                    type: event.target.value === "multiple" ? "Multipla" : form.type,
+                  })
+                }
+              >
+                <option value="single">Simples</option>
+                <option value="multiple">Dupla / multipla</option>
+              </select>
             </label>
             <label>
+              {form.ticketKind === "multiple" ? "Nome do bilhete" : "Evento"}
+              <input
+                placeholder={form.ticketKind === "multiple" ? "Ex: Dupla Champions League" : "Ex: Botafogo x Vasco"}
+                value={form.event}
+                onChange={(event) => setForm({ ...form, event: event.target.value })}
+              />
+            </label>
+            {form.ticketKind === "multiple" && (
+              <label>
+                Selecoes do bilhete
+                <textarea
+                  rows={4}
+                  placeholder={"Uma selecao por linha. Ex:\nReal Madrid vence\nPSG over 1.5 gols"}
+                  value={form.selections}
+                  onChange={(event) => setForm({ ...form, selections: event.target.value })}
+                />
+              </label>
+            )}
+            <label>
               Mercado
-              <input placeholder="Ex: Over 2.5 gols" value={form.market} onChange={(event) => setForm({ ...form, market: event.target.value })} />
+              <input
+                placeholder={form.ticketKind === "multiple" ? "Ex: Dupla, tripla, acumulada" : "Ex: Over 2.5 gols"}
+                value={form.market}
+                onChange={(event) => setForm({ ...form, market: event.target.value })}
+              />
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label>
@@ -324,6 +389,7 @@ export default function Home() {
                     <tr>
                       <th>Data</th>
                       <th>Evento</th>
+                      <th>Bilhete</th>
                       <th>Tipo</th>
                       <th>Odd</th>
                       <th>Stake</th>
@@ -339,6 +405,9 @@ export default function Home() {
                         <td>
                           <strong>{bet.event}</strong>
                           <span>{bet.market}</span>
+                        </td>
+                        <td>
+                          <TicketDetails bet={bet} />
                         </td>
                         <td>{bet.type}</td>
                         <td>{bet.odd.toFixed(2)}</td>
@@ -357,7 +426,7 @@ export default function Home() {
                     ))}
                     {filteredBets.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="empty-state">Nenhuma aposta encontrada para os filtros atuais.</td>
+                        <td colSpan={9} className="empty-state">Nenhuma aposta encontrada para os filtros atuais.</td>
                       </tr>
                     )}
                   </tbody>
@@ -420,6 +489,26 @@ function Metric({ label, value, tone }: { label: string; value: string; tone?: "
       <strong className={tone === "good" ? "metric-good" : tone === "bad" ? "metric-bad" : ""}>
         {value}
       </strong>
+    </div>
+  );
+}
+
+function TicketDetails({ bet }: { bet: Bet }) {
+  const selections = selectionsForBet(bet);
+  const isMultiple = bet.ticketKind === "multiple" || selections.length > 1;
+
+  return (
+    <div className="ticket-details">
+      <span className={`ticket-kind ${isMultiple ? "multiple" : "single"}`}>
+        {isMultiple ? `${selections.length} selecoes` : "Simples"}
+      </span>
+      {isMultiple && (
+        <ul>
+          {selections.map((selection, index) => (
+            <li key={`${bet.id}-${selection}-${index}`}>{selection}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
