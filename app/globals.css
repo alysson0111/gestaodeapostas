@@ -138,6 +138,44 @@ td span {
   color: #365144;
 }
 
+.bet-form h2 {
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.bet-form p {
+  font-size: 0.78rem;
+}
+
+.bet-form label {
+  gap: 0.32rem;
+  font-size: 0.76rem;
+}
+
+.bet-form input,
+.bet-form select,
+.bet-form textarea {
+  min-height: 34px;
+  border-radius: 7px;
+  padding: 0.42rem 0.55rem;
+  font-size: 0.82rem;
+}
+
+.bet-form textarea {
+  min-height: 66px;
+}
+
+.bet-form .icon-button {
+  width: 30px;
+  height: 30px;
+  font-size: 0.8rem;
+}
+
+.bet-form .primary-button {
+  min-height: 38px;
+  font-size: 0.86rem;
+}
+
 .row-actions {
   display: flex;
   gap: 0.35rem;

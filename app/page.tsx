@@ -263,9 +263,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[390px_1fr] lg:px-8">
-        <form onSubmit={handleSubmit} className="h-fit rounded-lg border border-[#d7dfd4] bg-white p-5 shadow-sm">
-          <div className="mb-5 flex items-center justify-between gap-3">
+      <section className="mx-auto grid max-w-7xl gap-5 px-5 py-5 lg:grid-cols-[320px_1fr] lg:px-8">
+        <form onSubmit={handleSubmit} className="bet-form h-fit rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-bold">Nova aposta</h2>
               <p className="text-sm text-[#64736b]">Registre a odd, stake e mercado.</p>
@@ -275,7 +275,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             <label>
               Data
               <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
