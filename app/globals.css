@@ -161,19 +161,27 @@ td span {
   color: #c53b3b;
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(116px, 148px));
+  gap: 0.55rem;
+  align-items: start;
+}
+
 .rounded-lg strong {
   display: block;
-  margin-top: 0.2rem;
-  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  margin-top: 0.12rem;
+  font-size: clamp(0.92rem, 1.15vw, 1.08rem);
   line-height: 1.1;
 }
 
 .rounded-lg:has(> p + strong) {
-  padding: 0.72rem 0.9rem;
+  min-height: 54px;
+  padding: 0.48rem 0.62rem;
 }
 
 .rounded-lg > p:first-child {
-  font-size: 0.66rem;
+  font-size: 0.58rem;
   line-height: 1;
 }
 

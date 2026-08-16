@@ -254,7 +254,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
+          <div className="metric-grid rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
@@ -356,7 +356,7 @@ export default function Home() {
         </form>
 
         <div className="grid gap-6">
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="metric-grid">
             <Metric label="Investido" value={currency.format(metrics.invested)} />
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
