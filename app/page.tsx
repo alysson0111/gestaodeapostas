@@ -238,7 +238,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#f4f7f3] text-[#14221d]">
       <section className="border-b border-[#d7dfd4] bg-[#fbfcf8]">
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-6 lg:grid-cols-[1fr_380px] lg:px-8">
+        <div className="content-left grid max-w-7xl gap-8 px-4 py-6 lg:grid-cols-[1fr_380px] lg:px-5">
           <div className="flex flex-col justify-center gap-4">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c7665]">
               Controle de apostas esportivas
@@ -263,7 +263,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-5 py-5 lg:grid-cols-[320px_1fr] lg:px-8">
+      <section className="content-left grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[320px_1fr] lg:px-5">
         <form onSubmit={handleSubmit} className="bet-form h-fit rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>

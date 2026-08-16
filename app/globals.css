@@ -27,6 +27,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.content-left {
+  margin-left: 0;
+  margin-right: auto;
+  width: 100%;
+}
+
 button,
 input,
 select,
