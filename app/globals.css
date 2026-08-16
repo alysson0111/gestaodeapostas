@@ -168,6 +168,15 @@ td span {
   line-height: 1.1;
 }
 
+.rounded-lg strong.event-name {
+  margin-top: 0;
+  color: #17231f;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
 .status {
   display: inline-flex;
   width: fit-content;

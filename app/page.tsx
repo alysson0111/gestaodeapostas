@@ -403,7 +403,7 @@ export default function Home() {
                       <tr key={bet.id}>
                         <td>{bet.date}</td>
                         <td>
-                          <strong>{bet.event}</strong>
+                          <strong className="event-name">{bet.event}</strong>
                           <span>{bet.market}</span>
                         </td>
                         <td>
