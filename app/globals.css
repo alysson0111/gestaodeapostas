@@ -1,0 +1,279 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f7f3;
+  --foreground: #14221d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+label {
+  display: grid;
+  gap: 0.45rem;
+  color: #40524a;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #cad6c7;
+  border-radius: 8px;
+  background: #fbfcf8;
+  color: #14221d;
+  min-height: 44px;
+  padding: 0.7rem 0.8rem;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #2f7d5c;
+  box-shadow: 0 0 0 3px rgba(47, 125, 92, 0.14);
+}
+
+table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e3e8df;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  background: #f7f9f3;
+  color: #66746b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+td {
+  color: #304039;
+  font-size: 0.92rem;
+}
+
+td strong {
+  display: block;
+  color: #17231f;
+}
+
+td span {
+  display: block;
+  margin-top: 0.2rem;
+  color: #6b776f;
+  font-size: 0.82rem;
+}
+
+.primary-button,
+.icon-button,
+.row-actions button {
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.primary-button {
+  min-height: 48px;
+  background: #1f6f54;
+  color: white;
+  box-shadow: 0 12px 24px rgba(31, 111, 84, 0.18);
+}
+
+.primary-button:hover,
+.icon-button:hover,
+.row-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.icon-button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  background: #eef3ea;
+  color: #365144;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.row-actions button {
+  width: 30px;
+  height: 30px;
+  background: #eef3ea;
+  color: #2f463b;
+  font-size: 0.75rem;
+}
+
+.metric-good,
+.positive {
+  color: #16804f;
+}
+
+.metric-bad,
+.negative {
+  color: #c53b3b;
+}
+
+.rounded-lg strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  line-height: 1.1;
+}
+
+.status {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.32rem 0.62rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.status.won {
+  background: #e4f6eb;
+  color: #16784b;
+}
+
+.status.lost {
+  background: #fde8e8;
+  color: #be3434;
+}
+
+.status.pending {
+  background: #fff3ce;
+  color: #8a6111;
+}
+
+.status.void {
+  background: #e9eef2;
+  color: #4e5b63;
+}
+
+.chart {
+  display: flex;
+  align-items: end;
+  gap: 0.65rem;
+  min-height: 170px;
+  margin-top: 1rem;
+  border-left: 1px solid #d7dfd4;
+  border-bottom: 1px solid #d7dfd4;
+  padding: 1rem 0.5rem 0.5rem;
+}
+
+.chart p {
+  align-self: center;
+  color: #718077;
+}
+
+.bar-wrap {
+  display: grid;
+  min-width: 34px;
+  justify-items: center;
+  gap: 0.4rem;
+}
+
+.bar {
+  width: 18px;
+  min-height: 8px;
+  border-radius: 5px 5px 0 0;
+}
+
+.positive-bar {
+  background: #2f9368;
+}
+
+.negative-bar {
+  background: #d55050;
+}
+
+.bar-wrap small {
+  color: #748079;
+  font-size: 0.72rem;
+}
+
+.type-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.type-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid #e2e8de;
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+
+.type-row span {
+  display: block;
+  color: #77837c;
+  font-size: 0.82rem;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #718077;
+}
+
+@media (max-width: 720px) {
+  th,
+  td {
+    padding: 0.75rem;
+  }
+
+  .rounded-lg strong {
+    font-size: 1.25rem;
+  }
+}
