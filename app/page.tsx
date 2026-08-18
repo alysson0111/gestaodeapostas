@@ -292,9 +292,10 @@ export default function Home() {
 
           <div className="metric-grid top-metrics">
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
-            <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
-            <Metric label="Apostas" value={String(metrics.total)} />
-            <Metric label="Abertas" value={String(metrics.pending)} />
+            <Metric label="Investido" value={currency.format(metrics.invested)} />
+            <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
+            <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
+            <Metric label="Resolvidas" value={String(metrics.settled)} />
           </div>
         </div>
       </section>
@@ -392,13 +393,6 @@ export default function Home() {
         </form>
 
         <div className="grid gap-6">
-          <div className="metric-grid">
-            <Metric label="Investido" value={currency.format(metrics.invested)} />
-            <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
-            <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
-            <Metric label="Resolvidas" value={String(metrics.settled)} />
-          </div>
-
           <div className="grid gap-6 xl:grid-cols-[1fr_330px]">
             <section className="rounded-lg border border-[#d7dfd4] bg-white shadow-sm">
               <div className="flex flex-col gap-3 border-b border-[#e3e8df] p-4 md:flex-row md:items-center md:justify-between">
