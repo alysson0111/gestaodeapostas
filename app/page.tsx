@@ -292,6 +292,9 @@ export default function Home() {
 
           <div className="metric-grid top-metrics">
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
+            <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
+            <Metric label="Apostas" value={String(metrics.total)} />
+            <Metric label="Abertas" value={String(metrics.pending)} />
             <Metric label="Investido" value={currency.format(metrics.invested)} />
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />

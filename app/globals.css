@@ -242,7 +242,7 @@ td span {
 }
 
 .top-metrics {
-  grid-template-columns: repeat(5, minmax(92px, 122px));
+  grid-template-columns: repeat(4, minmax(92px, 122px));
   justify-content: end;
 }
 
