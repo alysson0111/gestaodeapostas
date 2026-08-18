@@ -18,7 +18,8 @@ type Bet = {
   notes: string;
 };
 
-const startBank = 200;
+const defaultStartBank = 200;
+const defaultBaseStake = 100;
 
 const currency = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -96,7 +97,7 @@ function formatDate(value: string) {
   return day && month ? `${day}.${month}` : value;
 }
 
-function emptyForm() {
+function emptyForm(stake = defaultBaseStake) {
   return {
     date: new Date().toISOString().slice(0, 10),
     event: "",
@@ -105,7 +106,7 @@ function emptyForm() {
     market: "",
     type: "Futebol",
     odd: "1.80",
-    stake: "100",
+    stake: String(stake),
     status: "pending" as BetStatus,
     notes: "",
   };
@@ -114,17 +115,35 @@ function emptyForm() {
 export default function Home() {
   const [bets, setBets] = useState<Bet[]>(initialBets);
   const [form, setForm] = useState(emptyForm);
+  const [initialBank, setInitialBank] = useState(defaultStartBank);
+  const [baseStake, setBaseStake] = useState(defaultBaseStake);
   const [statusFilter, setStatusFilter] = useState<"all" | BetStatus>("all");
   const [typeFilter, setTypeFilter] = useState("Todos");
 
   useEffect(() => {
     const saved = window.localStorage.getItem("bet-control-records");
     if (saved) setBets(JSON.parse(saved));
+    const savedSettings = window.localStorage.getItem("bet-control-settings");
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      if (Number(parsed.initialBank) > 0) setInitialBank(Number(parsed.initialBank));
+      if (Number(parsed.baseStake) > 0) {
+        setBaseStake(Number(parsed.baseStake));
+        setForm((current) => ({ ...current, stake: String(parsed.baseStake) }));
+      }
+    }
   }, []);
 
   useEffect(() => {
     window.localStorage.setItem("bet-control-records", JSON.stringify(bets));
   }, [bets]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      "bet-control-settings",
+      JSON.stringify({ initialBank, baseStake }),
+    );
+  }, [initialBank, baseStake]);
 
   const sortedBets = useMemo(
     () => [...bets].sort((a, b) => a.date.localeCompare(b.date)),
@@ -137,7 +156,7 @@ export default function Home() {
   );
 
   const filteredRows = useMemo(() => {
-    let runningBank = startBank;
+    let runningBank = initialBank;
     return sortedBets
       .map((bet) => {
         const profit = profitForBet(bet);
@@ -146,14 +165,14 @@ export default function Home() {
           bet,
           runningBank,
           profit,
-          bankPercent: (runningBank - startBank) / startBank,
-          dayPercent: profit / startBank,
+          bankPercent: initialBank > 0 ? (runningBank - initialBank) / initialBank : 0,
+          dayPercent: initialBank > 0 ? profit / initialBank : 0,
         };
       })
       .filter(({ bet }) => statusFilter === "all" || bet.status === statusFilter)
       .filter(({ bet }) => typeFilter === "Todos" || bet.type === typeFilter)
       .reverse();
-  }, [sortedBets, statusFilter, typeFilter]);
+  }, [initialBank, sortedBets, statusFilter, typeFilter]);
 
   const metrics = useMemo(() => {
     const settled = bets.filter((bet) => bet.status === "won" || bet.status === "lost");
@@ -162,21 +181,31 @@ export default function Home() {
     const wins = settled.filter((bet) => bet.status === "won").length;
     const reds = settled.filter((bet) => bet.status === "lost").length;
     const push = bets.filter((bet) => bet.status === "pending" || bet.status === "void").length;
-    const averageStake = bets.length ? allStake / bets.length : 0;
 
     return {
-      currentBank: startBank + profit,
+      currentBank: initialBank + profit,
       allStake,
       profit,
-      roi: startBank > 0 ? profit / startBank : 0,
+      roi: initialBank > 0 ? profit / initialBank : 0,
       wins,
       reds,
       push,
-      averageStake,
-      unit: startBank / 40,
+      unit: initialBank / 40,
       splitByThree: profit / 3,
     };
-  }, [bets]);
+  }, [bets, initialBank]);
+
+  function handleInitialBankChange(value: string) {
+    const next = Number(value);
+    setInitialBank(next >= 0 ? next : 0);
+  }
+
+  function handleBaseStakeChange(value: string) {
+    const next = Number(value);
+    const validStake = next >= 0 ? next : 0;
+    setBaseStake(validStake);
+    setForm((current) => ({ ...current, stake: String(validStake) }));
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -210,7 +239,7 @@ export default function Home() {
       },
       ...current,
     ]);
-    setForm(emptyForm());
+    setForm(emptyForm(baseStake));
   }
 
   function updateStatus(id: string, status: BetStatus) {
@@ -228,8 +257,8 @@ export default function Home() {
       <section className="sheet">
         <header className="summary-grid" aria-label="Resumo da banca">
           <div className="summary-title">FUTEBOL</div>
-          <SummaryBox label="Banca Inicio" value={currency.format(startBank)} tone="green" />
-          <SummaryBox label="Stake" value={currency.format(metrics.averageStake)} tone="green" />
+          <EditableSummaryBox label="Banca Inicio" value={initialBank} onChange={handleInitialBankChange} tone="green" />
+          <EditableSummaryBox label="Stake" value={baseStake} onChange={handleBaseStakeChange} tone="green" />
           <SummaryBox label="Unidade" value={metrics.unit.toFixed(2)} tone="green" />
           <SummaryBox label="Banca Atual" value={currency.format(metrics.currentBank)} tone="green" />
           <SummaryBox label="Green" value={String(metrics.wins)} tone="lime" />
@@ -341,6 +370,32 @@ export default function Home() {
         </div>
       </section>
     </main>
+  );
+}
+
+function EditableSummaryBox({
+  label,
+  value,
+  onChange,
+  tone,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: string) => void;
+  tone: "green";
+}) {
+  return (
+    <label className={`summary-box editable-summary ${tone}`}>
+      <span>{label}</span>
+      <input
+        aria-label={label}
+        min="0"
+        step="0.01"
+        type="number"
+        value={Number.isFinite(value) ? value : 0}
+        onChange={(event) => onChange(event.target.value)}
+      />
+    </label>
   );
 }
 
