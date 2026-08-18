@@ -280,25 +280,17 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f7f3] text-[#14221d]">
-      <section className="border-b border-[#d7dfd4] bg-[#fbfcf8]">
-        <div className="content-left grid max-w-7xl gap-8 px-4 py-6 lg:grid-cols-[1fr_380px] lg:px-5">
-          <div className="flex flex-col justify-center gap-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4c7665]">
+    <main className="app-shell min-h-screen text-[#14221d]">
+      <section className="top-strip">
+        <div className="content-left flex max-w-7xl flex-col gap-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:px-5">
+          <div>
+            <p className="section-kicker">
               Controle de apostas esportivas
             </p>
-            <div>
-              <h1 className="max-w-4xl text-4xl font-black leading-tight sm:text-5xl">
-                Gestão de banca, odds e ROI em um painel direto ao ponto.
-              </h1>
-              <p className="mt-4 max-w-2xl text-base text-[#526159] sm:text-lg">
-                Cadastre suas entradas, acompanhe greens e reds, filtre por tipo de aposta
-                e veja se a estratégia está pagando a banca.
-              </p>
-            </div>
+            <h1>Gestao de banca</h1>
           </div>
 
-          <div className="metric-grid rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
+          <div className="metric-grid top-metrics">
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
@@ -307,7 +299,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="content-left grid max-w-7xl gap-5 px-4 py-5 lg:grid-cols-[320px_1fr] lg:px-5">
+      <section className="content-left dashboard-grid grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[300px_1fr] lg:px-5">
         <form onSubmit={handleSubmit} className="bet-form h-fit rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>

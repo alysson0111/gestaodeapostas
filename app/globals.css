@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f7f3;
+  --background: #eef3ed;
   --foreground: #14221d;
 }
 
@@ -25,6 +25,35 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.app-shell {
+  background:
+    linear-gradient(180deg, #f7faf5 0, #eef3ed 210px),
+    #eef3ed;
+}
+
+.top-strip {
+  border-bottom: 1px solid #d5ddd1;
+  background: rgba(250, 252, 248, 0.94);
+}
+
+.top-strip h1 {
+  margin: 0.1rem 0 0;
+  color: #17231f;
+  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.section-kicker {
+  margin: 0;
+  color: #4c7665;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .content-left {
@@ -74,14 +103,14 @@ textarea:focus {
 
 table {
   width: 100%;
-  min-width: 980px;
+  min-width: 860px;
   border-collapse: collapse;
 }
 
 th,
 td {
   border-bottom: 1px solid #e3e8df;
-  padding: 0.9rem 1rem;
+  padding: 0.62rem 0.72rem;
   text-align: left;
   vertical-align: middle;
 }
@@ -89,7 +118,7 @@ td {
 th {
   background: #f7f9f3;
   color: #66746b;
-  font-size: 0.75rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -97,7 +126,7 @@ th {
 
 td {
   color: #304039;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
 }
 
 td strong {
@@ -145,7 +174,7 @@ td span {
 }
 
 .bet-form h2 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.1;
 }
 
@@ -207,21 +236,26 @@ td span {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(116px, 148px));
+  grid-template-columns: repeat(auto-fit, minmax(104px, 134px));
   gap: 0.55rem;
   align-items: start;
+}
+
+.top-metrics {
+  grid-template-columns: repeat(4, minmax(92px, 122px));
+  justify-content: end;
 }
 
 .rounded-lg strong {
   display: block;
   margin-top: 0.12rem;
-  font-size: clamp(0.92rem, 1.15vw, 1.08rem);
+  font-size: clamp(0.86rem, 1vw, 1rem);
   line-height: 1.1;
 }
 
 .rounded-lg:has(> p + strong) {
-  min-height: 54px;
-  padding: 0.48rem 0.62rem;
+  min-height: 48px;
+  padding: 0.42rem 0.56rem;
 }
 
 .rounded-lg > p:first-child {
@@ -306,8 +340,8 @@ td span {
   display: flex;
   align-items: end;
   gap: 0.65rem;
-  min-height: 170px;
-  margin-top: 1rem;
+  min-height: 142px;
+  margin-top: 0.8rem;
   border-left: 1px solid #d7dfd4;
   border-bottom: 1px solid #d7dfd4;
   padding: 1rem 0.5rem 0.5rem;
@@ -346,8 +380,8 @@ td span {
 
 .type-list {
   display: grid;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
 }
 
 .type-row {
@@ -357,7 +391,7 @@ td span {
   gap: 1rem;
   border: 1px solid #e2e8de;
   border-radius: 8px;
-  padding: 0.8rem;
+  padding: 0.62rem;
 }
 
 .type-row span {
@@ -373,12 +407,17 @@ td span {
 }
 
 @media (max-width: 720px) {
+  .top-metrics {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    justify-content: stretch;
+  }
+
   th,
   td {
-    padding: 0.75rem;
+    padding: 0.58rem;
   }
 
   .rounded-lg strong {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 }
