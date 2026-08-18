@@ -101,6 +101,11 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(47, 125, 92, 0.14);
 }
 
+input[readonly] {
+  background: #eef3ea;
+  color: #43554c;
+}
+
 table {
   width: 100%;
   min-width: 860px;
@@ -209,6 +214,48 @@ td span {
 .bet-form .primary-button {
   min-height: 38px;
   font-size: 0.86rem;
+}
+
+.multiple-builder {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.multiple-builder-head,
+.selection-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.multiple-builder-head strong,
+.selection-card-head span {
+  color: #40524a;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.multiple-builder button,
+.selection-card-head button {
+  border: 0;
+  border-radius: 7px;
+  background: #eef3ea;
+  color: #2f463b;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-height: 28px;
+  padding: 0 0.55rem;
+}
+
+.selection-card {
+  display: grid;
+  gap: 0.48rem;
+  border: 1px solid #dbe4d7;
+  border-radius: 8px;
+  background: #fbfcf8;
+  padding: 0.55rem;
 }
 
 .row-actions {
@@ -330,6 +377,15 @@ td span {
 
 .ticket-details li {
   line-height: 1.25;
+}
+
+.ticket-details li strong {
+  font-size: 0.78rem;
+}
+
+.ticket-details li span {
+  margin-top: 0.08rem;
+  font-size: 0.74rem;
 }
 
 .status.won {
