@@ -242,8 +242,24 @@ td span {
 }
 
 .top-metrics {
-  grid-template-columns: repeat(4, minmax(92px, 122px));
+  grid-template-columns: repeat(8, minmax(70px, 1fr));
+  width: min(100%, 720px);
+  gap: 0.32rem;
   justify-content: end;
+}
+
+.top-metrics .rounded-lg:has(> p + strong) {
+  min-height: 38px;
+  padding: 0.28rem 0.42rem;
+}
+
+.top-metrics .rounded-lg > p:first-child {
+  font-size: 0.48rem;
+  letter-spacing: 0.16em;
+}
+
+.top-metrics .rounded-lg strong {
+  font-size: 0.76rem;
 }
 
 .rounded-lg strong {
