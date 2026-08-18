@@ -136,9 +136,42 @@ function emptyForm() {
   };
 }
 
+function formFromBet(bet: Bet) {
+  const multipleSelections =
+    bet.selectionDetails?.map((selection, index) => ({
+      id: `leg-${index + 1}`,
+      event: selection.event,
+      market: selection.market,
+      odd: selection.odd.toFixed(2),
+    })) ??
+    selectionsForBet(bet).map((selection, index) => ({
+      id: `leg-${index + 1}`,
+      event: selection,
+      market: bet.market,
+      odd: index === 0 ? bet.odd.toFixed(2) : "1.50",
+    }));
+
+  return {
+    date: bet.date,
+    event: bet.event,
+    ticketKind: bet.ticketKind ?? "single",
+    multipleSelections:
+      multipleSelections.length >= 2
+        ? multipleSelections
+        : [emptySelection("leg-1"), emptySelection("leg-2")],
+    market: bet.market,
+    type: bet.type,
+    odd: bet.odd.toFixed(2),
+    stake: String(bet.stake),
+    status: bet.status,
+    notes: bet.notes,
+  };
+}
+
 export default function Home() {
   const [bets, setBets] = useState<Bet[]>(initialBets);
   const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | BetStatus>("all");
   const [typeFilter, setTypeFilter] = useState("Todos");
 
@@ -313,13 +346,12 @@ export default function Home() {
 
     if (!eventName || !market || odd <= 1 || stake <= 0) return;
 
-    const newBet = {
-      id: crypto.randomUUID(),
+    const savedBet: Bet = {
+      id: editingId ?? crypto.randomUUID(),
       date: form.date,
       event: eventName,
       ticketKind: form.ticketKind,
       selections,
-      selectionDetails,
       market,
       type:
         form.ticketKind === "multiple" && form.type === "Resultado"
@@ -331,8 +363,25 @@ export default function Home() {
       notes: form.notes.trim(),
     };
 
-    setBets((current) => [newBet, ...current]);
-    void setDoc(doc(db, "bets", newBet.id), newBet);
+    if (selectionDetails) savedBet.selectionDetails = selectionDetails;
+
+    setBets((current) =>
+      editingId
+        ? current.map((bet) => (bet.id === editingId ? savedBet : bet))
+        : [savedBet, ...current],
+    );
+    void setDoc(doc(db, "bets", savedBet.id), savedBet);
+    setEditingId(null);
+    setForm(emptyForm());
+  }
+
+  function startEdit(bet: Bet) {
+    setEditingId(bet.id);
+    setForm(formFromBet(bet));
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
     setForm(emptyForm());
   }
 
@@ -376,8 +425,10 @@ export default function Home() {
         <form onSubmit={handleSubmit} className="bet-form h-fit rounded-lg border border-[#d7dfd4] bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-xl font-bold">Nova aposta</h2>
-              <p className="text-sm text-[#64736b]">Registre a odd, stake e mercado.</p>
+              <h2 className="text-xl font-bold">{editingId ? "Editar aposta" : "Nova aposta"}</h2>
+              <p className="text-sm text-[#64736b]">
+                {editingId ? "Altere os dados e salve." : "Registre a odd, stake e mercado."}
+              </p>
             </div>
           </div>
 
@@ -503,7 +554,16 @@ export default function Home() {
               Observacao
               <textarea rows={3} placeholder="Leitura do jogo, fonte ou regra da entrada" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
             </label>
-            <button className="primary-button" type="submit">+ Cadastrar aposta</button>
+            <div className="form-actions">
+              <button className="primary-button" type="submit">
+                {editingId ? "Salvar aposta" : "+ Cadastrar aposta"}
+              </button>
+              {editingId && (
+                <button className="secondary-button" type="button" onClick={cancelEdit}>
+                  Cancelar
+                </button>
+              )}
+            </div>
           </div>
         </form>
 
@@ -561,6 +621,7 @@ export default function Home() {
                         <td className={profitForBet(bet) >= 0 ? "positive" : "negative"}>{currency.format(profitForBet(bet))}</td>
                         <td>
                           <div className="row-actions">
+                            <button onClick={() => startEdit(bet)} aria-label="Editar">E</button>
                             <button onClick={() => updateStatus(bet.id, "won")} aria-label="Marcar green">G</button>
                             <button onClick={() => updateStatus(bet.id, "lost")} aria-label="Marcar red">R</button>
                             <button onClick={() => updateStatus(bet.id, "void")} aria-label="Anular">A</button>
