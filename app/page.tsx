@@ -1,6 +1,16 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  onSnapshot,
+  setDoc,
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 type BetStatus = "pending" | "won" | "lost" | "void";
 
@@ -112,7 +122,35 @@ export default function Home() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("bet-control-records");
-    if (saved) setBets(JSON.parse(saved));
+    const savedBets = saved ? (JSON.parse(saved) as Bet[]) : [];
+
+    const unsubscribe = onSnapshot(
+      collection(db, "bets"),
+      async (snapshot) => {
+        const remoteBets = snapshot.docs.map((document) => ({
+          ...(document.data() as Bet),
+          id: document.id,
+        }));
+
+        if (remoteBets.length === 0 && savedBets.length > 0) {
+          const batch = writeBatch(db);
+          savedBets.forEach((bet) => {
+            batch.set(doc(db, "bets", bet.id), bet);
+          });
+          await batch.commit();
+          setBets(savedBets);
+          return;
+        }
+
+        setBets(remoteBets);
+        window.localStorage.setItem("bet-control-records", JSON.stringify(remoteBets));
+      },
+      () => {
+        if (savedBets.length > 0) setBets(savedBets);
+      },
+    );
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -199,25 +237,25 @@ export default function Home() {
     if (!eventName || !form.market.trim() || odd <= 1 || stake <= 0) return;
     if (form.ticketKind === "multiple" && selections.length < 2) return;
 
-    setBets((current) => [
-      {
-        id: crypto.randomUUID(),
-        date: form.date,
-        event: eventName,
-        ticketKind: form.ticketKind,
-        selections: form.ticketKind === "multiple" ? selections : [eventName],
-        market: form.market.trim(),
-        type:
-          form.ticketKind === "multiple" && form.type === "Resultado"
-            ? "Multipla"
-            : form.type.trim() || "Outros",
-        odd,
-        stake,
-        status: form.status,
-        notes: form.notes.trim(),
-      },
-      ...current,
-    ]);
+    const newBet = {
+      id: crypto.randomUUID(),
+      date: form.date,
+      event: eventName,
+      ticketKind: form.ticketKind,
+      selections: form.ticketKind === "multiple" ? selections : [eventName],
+      market: form.market.trim(),
+      type:
+        form.ticketKind === "multiple" && form.type === "Resultado"
+          ? "Multipla"
+          : form.type.trim() || "Outros",
+      odd,
+      stake,
+      status: form.status,
+      notes: form.notes.trim(),
+    };
+
+    setBets((current) => [newBet, ...current]);
+    void setDoc(doc(db, "bets", newBet.id), newBet);
     setForm(emptyForm());
   }
 
@@ -225,14 +263,20 @@ export default function Home() {
     setBets((current) =>
       current.map((bet) => (bet.id === id ? { ...bet, status } : bet)),
     );
+    void setDoc(doc(db, "bets", id), { status }, { merge: true });
   }
 
   function removeBet(id: string) {
     setBets((current) => current.filter((bet) => bet.id !== id));
+    void deleteDoc(doc(db, "bets", id));
   }
 
-  function clearDemo() {
+  async function clearDemo() {
     setBets([]);
+    const snapshot = await getDocs(collection(db, "bets"));
+    const batch = writeBatch(db);
+    snapshot.docs.forEach((document) => batch.delete(document.ref));
+    await batch.commit();
   }
 
   return (
