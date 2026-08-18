@@ -5,7 +5,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
   setDoc,
   writeBatch,
@@ -271,14 +270,6 @@ export default function Home() {
     void deleteDoc(doc(db, "bets", id));
   }
 
-  async function clearDemo() {
-    setBets([]);
-    const snapshot = await getDocs(collection(db, "bets"));
-    const batch = writeBatch(db);
-    snapshot.docs.forEach((document) => batch.delete(document.ref));
-    await batch.commit();
-  }
-
   return (
     <main className="app-shell min-h-screen text-[#14221d]">
       <section className="top-strip">
@@ -310,9 +301,6 @@ export default function Home() {
               <h2 className="text-xl font-bold">Nova aposta</h2>
               <p className="text-sm text-[#64736b]">Registre a odd, stake e mercado.</p>
             </div>
-            <button type="button" className="icon-button" onClick={clearDemo} aria-label="Limpar apostas">
-              x
-            </button>
           </div>
 
           <div className="grid gap-3">
