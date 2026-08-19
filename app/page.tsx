@@ -136,6 +136,41 @@ function emptyForm() {
   };
 }
 
+function normalizeBet(data: Partial<Bet>, id: string): Bet {
+  const fallbackDate = new Date().toISOString().slice(0, 10);
+  const ticketKind = data.ticketKind === "multiple" ? "multiple" : "single";
+  const event = data.event || "Aposta sem evento";
+  const selectionDetails = Array.isArray(data.selectionDetails)
+    ? data.selectionDetails
+        .map((selection) => ({
+          event: selection?.event || "",
+          market: selection?.market || "",
+          odd: Number(selection?.odd) || 1,
+        }))
+        .filter((selection) => selection.event)
+    : undefined;
+  const selections = selectionDetails?.length
+    ? selectionDetails.map((selection) => selection.event)
+    : Array.isArray(data.selections) && data.selections.length > 0
+      ? data.selections.filter(Boolean)
+      : [event];
+
+  return {
+    id,
+    date: data.date || fallbackDate,
+    event,
+    ticketKind,
+    selections,
+    selectionDetails,
+    market: data.market || "Mercado",
+    type: data.type || (ticketKind === "multiple" ? "Multipla" : "Resultado"),
+    odd: Number(data.odd) || 1,
+    stake: Number(data.stake) || 0,
+    status: data.status ?? "pending",
+    notes: data.notes || "",
+  };
+}
+
 function formFromBet(bet: Bet) {
   const multipleSelections =
     bet.selectionDetails?.map((selection, index) => ({
@@ -177,15 +212,18 @@ export default function Home() {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("bet-control-records");
-    const savedBets = saved ? (JSON.parse(saved) as Bet[]) : [];
+    const savedBets = saved
+      ? (JSON.parse(saved) as Partial<Bet>[]).map((bet, index) =>
+          normalizeBet(bet, bet.id || `saved-${index}`),
+        )
+      : [];
 
     const unsubscribe = onSnapshot(
       collection(db, "bets"),
       async (snapshot) => {
-        const remoteBets = snapshot.docs.map((document) => ({
-          ...(document.data() as Bet),
-          id: document.id,
-        }));
+        const remoteBets = snapshot.docs.map((document) =>
+          normalizeBet(document.data() as Partial<Bet>, document.id),
+        );
 
         if (remoteBets.length === 0 && savedBets.length > 0) {
           const batch = writeBatch(db);
@@ -221,7 +259,7 @@ export default function Home() {
     return bets
       .filter((bet) => statusFilter === "all" || bet.status === statusFilter)
       .filter((bet) => typeFilter === "Todos" || bet.type === typeFilter)
-      .sort((a, b) => b.date.localeCompare(a.date));
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   }, [bets, statusFilter, typeFilter]);
 
   const metrics = useMemo(() => {
@@ -268,7 +306,7 @@ export default function Home() {
   const curve = useMemo(() => {
     let balance = 0;
     return [...bets]
-      .sort((a, b) => a.date.localeCompare(b.date))
+      .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
       .filter((bet) => bet.status !== "pending")
       .map((bet) => {
         balance += profitForBet(bet);
