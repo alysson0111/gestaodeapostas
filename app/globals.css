@@ -305,8 +305,8 @@ td span {
 }
 
 .top-metrics {
-  grid-template-columns: repeat(8, minmax(70px, 1fr));
-  width: min(100%, 720px);
+  grid-template-columns: repeat(9, minmax(66px, 1fr));
+  width: min(100%, 800px);
   gap: 0.32rem;
   justify-content: end;
 }

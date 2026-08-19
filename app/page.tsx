@@ -267,6 +267,8 @@ export default function Home() {
     const invested = settled.reduce((sum, bet) => sum + bet.stake, 0);
     const profit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
     const wins = settled.filter((bet) => bet.status === "won").length;
+    const averageStake =
+      bets.length > 0 ? bets.reduce((sum, bet) => sum + bet.stake, 0) / bets.length : 0;
     const averageOdd =
       settled.length > 0
         ? settled.reduce((sum, bet) => sum + bet.odd, 0) / settled.length
@@ -280,6 +282,7 @@ export default function Home() {
       roi: invested > 0 ? profit / invested : 0,
       hitRate: settled.length > 0 ? wins / settled.length : 0,
       averageOdd,
+      averageStake,
       settled: settled.length,
     };
   }, [bets]);
@@ -455,6 +458,7 @@ export default function Home() {
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
             <Metric label="Resolvidas" value={String(metrics.settled)} />
+            <Metric label="Stake media" value={currency.format(metrics.averageStake)} />
           </div>
         </div>
       </section>
