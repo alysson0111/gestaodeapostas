@@ -9,6 +9,15 @@ import {
   setDoc,
   writeBatch,
 } from "firebase/firestore";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { db } from "./firebase";
 
 type BetStatus = "pending" | "won" | "lost" | "void";
@@ -289,33 +298,6 @@ export default function Home() {
     return settledCurve.length > 0 ? [{ label: "0", balance: 0 }, ...settledCurve] : [];
   }, [bets]);
 
-  const curveChart = useMemo(() => {
-    const width = 300;
-    const height = 210;
-    const padding = 22;
-    const values = curve.map((point) => point.balance);
-    const minValue = Math.min(0, ...values);
-    const maxValue = Math.max(0, ...values);
-    const range = maxValue - minValue || 1;
-
-    const points = curve.map((point, index) => {
-      const x =
-        curve.length === 1
-          ? width / 2
-          : padding + (index / (curve.length - 1)) * (width - padding * 2);
-      const y = height - padding - ((point.balance - minValue) / range) * (height - padding * 2);
-
-      return { ...point, x, y };
-    });
-
-    return {
-      width,
-      height,
-      line: points.map((point) => `${point.x},${point.y}`).join(" "),
-      points,
-    };
-  }, [curve]);
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const stake = parseMoneyInput(form.stake);
@@ -555,19 +537,33 @@ export default function Home() {
                   {curve.length === 0 ? (
                     <p>Feche apostas para ver a evolucao.</p>
                   ) : (
-                    <svg
-                      viewBox={`0 0 ${curveChart.width} ${curveChart.height}`}
-                      role="img"
-                      aria-label="Linha da curva de lucro acumulado"
-                    >
-                      <polyline className="curve-line" points={curveChart.line} />
-                      {curveChart.points.map((point, index) => (
-                        <g key={`${point.label}-${index}`}>
-                          <circle className="curve-dot" cx={point.x} cy={point.y} r="4" />
-                          <title>{`${point.label}: ${currency.format(point.balance)}`}</title>
-                        </g>
-                      ))}
-                    </svg>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={curve} margin={{ top: 18, right: 18, bottom: 18, left: 18 }}>
+                        <CartesianGrid stroke="#bcc4ba" strokeWidth={1} />
+                        <XAxis dataKey="label" hide />
+                        <YAxis hide domain={["auto", "auto"]} />
+                        <Tooltip
+                          cursor={{ stroke: "#ff6a1a", strokeWidth: 1 }}
+                          formatter={(value) => [currency.format(Number(value)), "Banca"]}
+                          labelFormatter={(label) => (label === "0" ? "Inicio" : `Data ${label}`)}
+                          contentStyle={{
+                            border: "1px solid #d7dfd4",
+                            borderRadius: 8,
+                            boxShadow: "0 10px 20px rgba(20, 34, 29, 0.12)",
+                            fontSize: 12,
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="balance"
+                          stroke="#ff6a1a"
+                          strokeWidth={3}
+                          dot={{ r: 5, fill: "#ff6a1a", stroke: "#ff6a1a", strokeWidth: 2 }}
+                          activeDot={{ r: 7, fill: "#ff6a1a", stroke: "#ffffff", strokeWidth: 2 }}
+                          isAnimationActive={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   )}
                 </div>
               </section>

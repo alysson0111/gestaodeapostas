@@ -478,6 +478,7 @@ td span {
 .line-chart {
   position: relative;
   display: grid;
+  height: 226px;
   min-height: 214px;
   margin-top: 0.8rem;
   overflow: hidden;
@@ -533,26 +534,12 @@ td span {
   text-align: center;
 }
 
-.line-chart svg {
-  position: relative;
+.line-chart .recharts-responsive-container {
   z-index: 1;
-  width: min(100%, 290px);
-  height: 198px;
+}
+
+.line-chart .recharts-surface {
   overflow: visible;
-}
-
-.curve-line {
-  fill: none;
-  stroke: #ff6a1a;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
-}
-
-.curve-dot {
-  fill: #ff6a1a;
-  stroke: #ff6a1a;
-  stroke-width: 2;
 }
 
 .type-list {
