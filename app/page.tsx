@@ -19,13 +19,6 @@ type BetSelection = {
   odd: number;
 };
 
-type FormSelection = {
-  id: string;
-  event: string;
-  market: string;
-  odd: string;
-};
-
 type Bet = {
   id: string;
   date: string;
@@ -117,22 +110,11 @@ function selectionsForBet(bet: Bet) {
   return bet.event ? [bet.event] : [];
 }
 
-function emptySelection(id: string): FormSelection {
-  return { id, event: "", market: "", odd: "1.50" };
-}
-
 function emptyForm() {
   return {
-    date: new Date().toISOString().slice(0, 10),
-    event: "",
-    ticketKind: "single" as "single" | "multiple",
-    multipleSelections: [emptySelection("leg-1"), emptySelection("leg-2")],
-    market: "",
-    type: "Resultado",
+    type: "Simples",
     odd: "1.80",
     stake: "50",
-    status: "pending" as BetStatus,
-    notes: "",
   };
 }
 
@@ -172,34 +154,10 @@ function normalizeBet(data: Partial<Bet>, id: string): Bet {
 }
 
 function formFromBet(bet: Bet) {
-  const multipleSelections =
-    bet.selectionDetails?.map((selection, index) => ({
-      id: `leg-${index + 1}`,
-      event: selection.event,
-      market: selection.market,
-      odd: selection.odd.toFixed(2),
-    })) ??
-    selectionsForBet(bet).map((selection, index) => ({
-      id: `leg-${index + 1}`,
-      event: selection,
-      market: bet.market,
-      odd: index === 0 ? bet.odd.toFixed(2) : "1.50",
-    }));
-
   return {
-    date: bet.date,
-    event: bet.event,
-    ticketKind: bet.ticketKind ?? "single",
-    multipleSelections:
-      multipleSelections.length >= 2
-        ? multipleSelections
-        : [emptySelection("leg-1"), emptySelection("leg-2")],
-    market: bet.market,
     type: bet.type,
     odd: bet.odd.toFixed(2),
     stake: String(bet.stake),
-    status: bet.status,
-    notes: bet.notes,
   };
 }
 
@@ -317,94 +275,30 @@ export default function Home() {
       });
   }, [bets]);
 
-  const multipleOdd = useMemo(() => {
-    if (form.ticketKind !== "multiple") return Number(form.odd);
-    const odds = form.multipleSelections
-      .map((selection) => Number(selection.odd))
-      .filter((odd) => odd > 1);
-    if (odds.length === 0) return 0;
-    return odds.reduce((total, odd) => total * odd, 1);
-  }, [form.multipleSelections, form.odd, form.ticketKind]);
-
-  function updateMultipleSelection(id: string, field: keyof Omit<FormSelection, "id">, value: string) {
-    setForm((current) => ({
-      ...current,
-      multipleSelections: current.multipleSelections.map((selection) =>
-        selection.id === id ? { ...selection, [field]: value } : selection,
-      ),
-    }));
-  }
-
-  function addMultipleSelection() {
-    setForm((current) => ({
-      ...current,
-      multipleSelections: [
-        ...current.multipleSelections,
-        emptySelection(`leg-${Date.now()}`),
-      ],
-    }));
-  }
-
-  function removeMultipleSelection(id: string) {
-    setForm((current) => ({
-      ...current,
-      multipleSelections:
-        current.multipleSelections.length > 2
-          ? current.multipleSelections.filter((selection) => selection.id !== id)
-          : current.multipleSelections,
-    }));
-  }
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const stake = Number(form.stake);
-    let odd = Number(form.odd);
-    let eventName = form.event.trim();
-    let market = form.market.trim();
-    let selections = eventName ? [eventName] : [];
-    let selectionDetails: BetSelection[] | undefined;
+    const odd = Number(form.odd);
+    const betType = form.type.trim() || "Simples";
+    const isMultiple = betType.toLowerCase() !== "simples";
+    const existingBet = editingId ? bets.find((bet) => bet.id === editingId) : undefined;
 
-    if (form.ticketKind === "multiple") {
-      const filledSelections = form.multipleSelections.map((selection) => ({
-        event: selection.event.trim(),
-        market: selection.market.trim(),
-        odd: Number(selection.odd),
-      }));
-
-      if (
-        filledSelections.length < 2 ||
-        filledSelections.some((selection) => !selection.event || !selection.market || selection.odd <= 1)
-      ) {
-        return;
-      }
-
-      selectionDetails = filledSelections;
-      selections = selectionDetails.map((selection) => selection.event);
-      odd = selectionDetails.reduce((total, selection) => total * selection.odd, 1);
-      eventName = eventName || `${selectionDetails.length} selecoes`;
-      market = market || "Multipla";
-    }
-
-    if (!eventName || !market || odd <= 1 || stake <= 0) return;
+    if (odd <= 1 || stake <= 0) return;
 
     const savedBet: Bet = {
       id: editingId ?? crypto.randomUUID(),
-      date: form.date,
-      event: eventName,
-      ticketKind: form.ticketKind,
-      selections,
-      market,
-      type:
-        form.ticketKind === "multiple" && form.type === "Resultado"
-          ? "Multipla"
-          : form.type.trim() || "Outros",
+      date: existingBet?.date ?? new Date().toISOString().slice(0, 10),
+      event: existingBet?.event && editingId ? existingBet.event : betType,
+      ticketKind: isMultiple ? "multiple" : "single",
+      selections: existingBet?.selections && editingId ? existingBet.selections : [betType],
+      selectionDetails: existingBet?.selectionDetails,
+      market: existingBet?.market && editingId ? existingBet.market : betType,
+      type: betType,
       odd,
       stake,
-      status: form.status,
-      notes: form.notes.trim(),
+      status: existingBet?.status ?? "pending",
+      notes: existingBet?.notes ?? "",
     };
-
-    if (selectionDetails) savedBet.selectionDetails = selectionDetails;
 
     setBets((current) =>
       editingId
@@ -469,121 +363,34 @@ export default function Home() {
             <div>
               <h2 className="text-xl font-bold">{editingId ? "Editar aposta" : "Nova aposta"}</h2>
               <p className="text-sm text-[#64736b]">
-                {editingId ? "Altere os dados e salve." : "Registre a odd, stake e mercado."}
+                {editingId ? "Altere e salve." : "Cadastre odd, stake e tipo."}
               </p>
             </div>
           </div>
 
-          <div className="grid gap-3">
+          <div className="grid gap-3 simple-form">
             <label>
-              Data
-              <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
-            </label>
-            <label>
-              Formato do bilhete
+              Tipo de aposta
               <select
-                value={form.ticketKind}
-                onChange={(event) =>
-                  setForm({
-                    ...form,
-                    ticketKind: event.target.value as "single" | "multiple",
-                    type: event.target.value === "multiple" ? "Multipla" : form.type,
-                  })
-                }
+                value={form.type}
+                onChange={(event) => setForm({ ...form, type: event.target.value })}
               >
-                <option value="single">Simples</option>
-                <option value="multiple">Dupla / multipla</option>
+                <option value="Simples">Simples</option>
+                <option value="Dupla">Dupla</option>
+                <option value="Tripla">Tripla</option>
+                <option value="Multipla">Multipla</option>
+                <option value="Ao vivo">Ao vivo</option>
+                <option value="Outros">Outros</option>
               </select>
             </label>
-            <label>
-              {form.ticketKind === "multiple" ? "Nome do bilhete" : "Evento"}
-              <input
-                placeholder={form.ticketKind === "multiple" ? "Ex: Dupla Champions League" : "Ex: Botafogo x Vasco"}
-                value={form.event}
-                onChange={(event) => setForm({ ...form, event: event.target.value })}
-              />
-            </label>
-            {form.ticketKind === "multiple" && (
-              <div className="multiple-builder">
-                <div className="multiple-builder-head">
-                  <strong>Selecoes do bilhete</strong>
-                  <button type="button" onClick={addMultipleSelection}>
-                    + Selecao
-                  </button>
-                </div>
-                {form.multipleSelections.map((selection, index) => (
-                  <div className="selection-card" key={selection.id}>
-                    <div className="selection-card-head">
-                      <span>Selecao {index + 1}</span>
-                      {form.multipleSelections.length > 2 && (
-                        <button type="button" onClick={() => removeMultipleSelection(selection.id)}>
-                          Remover
-                        </button>
-                      )}
-                    </div>
-                    <label>
-                      Time / evento
-                      <input
-                        placeholder="Ex: Real Madrid vence"
-                        value={selection.event}
-                        onChange={(event) => updateMultipleSelection(selection.id, "event", event.target.value)}
-                      />
-                    </label>
-                    <div className="grid grid-cols-[1fr_80px] gap-2">
-                      <label>
-                        Mercado
-                        <input
-                          placeholder="Ex: Over 1.5 gols"
-                          value={selection.market}
-                          onChange={(event) => updateMultipleSelection(selection.id, "market", event.target.value)}
-                        />
-                      </label>
-                      <label>
-                        Odd
-                        <input
-                          type="number"
-                          min="1.01"
-                          step="0.01"
-                          value={selection.odd}
-                          onChange={(event) => updateMultipleSelection(selection.id, "odd", event.target.value)}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <label>
-              {form.ticketKind === "multiple" ? "Tipo da multipla" : "Mercado"}
-              <input
-                placeholder={form.ticketKind === "multiple" ? "Ex: Dupla, tripla, acumulada" : "Ex: Over 2.5 gols"}
-                value={form.market}
-                onChange={(event) => setForm({ ...form, market: event.target.value })}
-              />
-            </label>
             <div className="grid grid-cols-2 gap-3">
               <label>
-                Tipo
-                <input value={form.type} onChange={(event) => setForm({ ...form, type: event.target.value })} />
-              </label>
-              <label>
-                Status
-                <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as BetStatus })}>
-                  {Object.entries(statusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <label>
-                {form.ticketKind === "multiple" ? "Odd total" : "Odd"}
+                Odd
                 <input
                   type="number"
                   min="1.01"
                   step="0.01"
-                  readOnly={form.ticketKind === "multiple"}
-                  value={form.ticketKind === "multiple" ? multipleOdd.toFixed(2) : form.odd}
+                  value={form.odd}
                   onChange={(event) => setForm({ ...form, odd: event.target.value })}
                 />
               </label>
@@ -592,10 +399,6 @@ export default function Home() {
                 <input type="number" min="1" step="1" value={form.stake} onChange={(event) => setForm({ ...form, stake: event.target.value })} />
               </label>
             </div>
-            <label>
-              Observacao
-              <textarea rows={3} placeholder="Leitura do jogo, fonte ou regra da entrada" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} />
-            </label>
             <div className="form-actions">
               <button className="primary-button" type="submit">
                 {editingId ? "Salvar aposta" : "+ Cadastrar aposta"}
