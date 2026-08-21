@@ -30,6 +30,7 @@ type Bet = {
   type: string;
   odd: number;
   stake: number;
+  cashout?: number;
   status: BetStatus;
   notes: string;
 };
@@ -49,7 +50,7 @@ const statusLabels: Record<BetStatus, string> = {
   pending: "Aberta",
   won: "Green",
   lost: "Red",
-  void: "Anulada",
+  void: "Push",
 };
 
 const initialBets: Bet[] = [
@@ -101,7 +102,14 @@ const initialBets: Bet[] = [
 function profitForBet(bet: Bet) {
   if (bet.status === "won") return bet.stake * (bet.odd - 1);
   if (bet.status === "lost") return -bet.stake;
+  if (bet.status === "void") return (bet.cashout ?? bet.stake) - bet.stake;
   return 0;
+}
+
+function parseMoneyInput(value: string) {
+  const trimmed = value.trim();
+  if (trimmed.includes(",")) return Number(trimmed.replace(/\./g, "").replace(",", "."));
+  return Number(trimmed);
 }
 
 function selectionsForBet(bet: Bet) {
@@ -114,7 +122,7 @@ function emptyForm() {
   return {
     type: "Simples",
     odd: "1.80",
-    stake: "50",
+    stake: "50,00",
   };
 }
 
@@ -148,6 +156,7 @@ function normalizeBet(data: Partial<Bet>, id: string): Bet {
     type: data.type || (ticketKind === "multiple" ? "Multipla" : "Resultado"),
     odd: Number(data.odd) || 1,
     stake: Number(data.stake) || 0,
+    cashout: typeof data.cashout === "number" ? data.cashout : undefined,
     status: data.status ?? "pending",
     notes: data.notes || "",
   };
@@ -157,7 +166,7 @@ function formFromBet(bet: Bet) {
   return {
     type: bet.type,
     odd: bet.odd.toFixed(2),
-    stake: String(bet.stake),
+    stake: bet.stake.toFixed(2).replace(".", ","),
   };
 }
 
@@ -221,7 +230,7 @@ export default function Home() {
   }, [bets, statusFilter, typeFilter]);
 
   const metrics = useMemo(() => {
-    const settled = bets.filter((bet) => bet.status === "won" || bet.status === "lost");
+    const settled = bets.filter((bet) => bet.status === "won" || bet.status === "lost" || bet.status === "void");
     const invested = settled.reduce((sum, bet) => sum + bet.stake, 0);
     const profit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
     const wins = settled.filter((bet) => bet.status === "won").length;
@@ -254,7 +263,7 @@ export default function Home() {
         profit: 0,
         count: 0,
       };
-      if (bet.status === "won" || bet.status === "lost") {
+      if (bet.status === "won" || bet.status === "lost" || bet.status === "void") {
         current.stake += bet.stake;
         current.profit += profitForBet(bet);
       }
@@ -277,8 +286,8 @@ export default function Home() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const stake = Number(form.stake);
-    const odd = Number(form.odd);
+    const stake = parseMoneyInput(form.stake);
+    const odd = parseMoneyInput(form.odd);
     const betType = form.type.trim() || "Simples";
     const isMultiple = betType.toLowerCase() !== "simples";
     const existingBet = editingId ? bets.find((bet) => bet.id === editingId) : undefined;
@@ -291,7 +300,6 @@ export default function Home() {
       event: existingBet?.event && editingId ? existingBet.event : betType,
       ticketKind: isMultiple ? "multiple" : "single",
       selections: existingBet?.selections && editingId ? existingBet.selections : [betType],
-      selectionDetails: existingBet?.selectionDetails,
       market: existingBet?.market && editingId ? existingBet.market : betType,
       type: betType,
       odd,
@@ -299,6 +307,9 @@ export default function Home() {
       status: existingBet?.status ?? "pending",
       notes: existingBet?.notes ?? "",
     };
+
+    if (existingBet?.selectionDetails) savedBet.selectionDetails = existingBet.selectionDetails;
+    if (typeof existingBet?.cashout === "number") savedBet.cashout = existingBet.cashout;
 
     setBets((current) =>
       editingId
@@ -321,10 +332,27 @@ export default function Home() {
   }
 
   function updateStatus(id: string, status: BetStatus) {
+    const bet = bets.find((item) => item.id === id);
+    let cashout: number | undefined;
+
+    if (status === "void") {
+      const defaultCashout = currency.format(bet?.cashout ?? bet?.stake ?? 0);
+      const typedCashout = window.prompt("Valor do cashout / retorno do Push:", defaultCashout);
+
+      if (typedCashout === null) return;
+
+      cashout = parseMoneyInput(typedCashout.replace(/[^\d,.-]/g, ""));
+      if (!Number.isFinite(cashout) || cashout < 0) return;
+    }
+
     setBets((current) =>
-      current.map((bet) => (bet.id === id ? { ...bet, status } : bet)),
+      current.map((bet) => (bet.id === id ? { ...bet, status, cashout } : bet)),
     );
-    void setDoc(doc(db, "bets", id), { status }, { merge: true });
+    void setDoc(
+      doc(db, "bets", id),
+      status === "void" ? { status, cashout } : { status, cashout: null },
+      { merge: true },
+    );
   }
 
   function removeBet(id: string) {
@@ -387,16 +415,16 @@ export default function Home() {
               <label>
                 Odd
                 <input
-                  type="number"
+                  inputMode="decimal"
                   min="1.01"
-                  step="0.01"
+                  pattern="[0-9.,]*"
                   value={form.odd}
                   onChange={(event) => setForm({ ...form, odd: event.target.value })}
                 />
               </label>
               <label>
                 Stake
-                <input type="number" min="1" step="1" value={form.stake} onChange={(event) => setForm({ ...form, stake: event.target.value })} />
+                <input inputMode="decimal" min="0.01" pattern="[0-9.,]*" value={form.stake} onChange={(event) => setForm({ ...form, stake: event.target.value })} />
               </label>
             </div>
             <div className="form-actions">
@@ -469,7 +497,7 @@ export default function Home() {
                             <button onClick={() => startEdit(bet)} aria-label="Editar">E</button>
                             <button onClick={() => updateStatus(bet.id, "won")} aria-label="Marcar green">G</button>
                             <button onClick={() => updateStatus(bet.id, "lost")} aria-label="Marcar red">R</button>
-                            <button onClick={() => updateStatus(bet.id, "void")} aria-label="Anular">A</button>
+                            <button onClick={() => updateStatus(bet.id, "void")} aria-label="Marcar push">P</button>
                             <button onClick={() => removeBet(bet.id)} aria-label="Excluir">x</button>
                           </div>
                         </td>
