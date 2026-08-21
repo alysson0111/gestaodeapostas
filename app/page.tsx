@@ -287,6 +287,33 @@ export default function Home() {
       });
   }, [bets]);
 
+  const curveChart = useMemo(() => {
+    const width = 300;
+    const height = 210;
+    const padding = 22;
+    const values = curve.map((point) => point.balance);
+    const minValue = Math.min(0, ...values);
+    const maxValue = Math.max(0, ...values);
+    const range = maxValue - minValue || 1;
+
+    const points = curve.map((point, index) => {
+      const x =
+        curve.length === 1
+          ? width / 2
+          : padding + (index / (curve.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((point.balance - minValue) / range) * (height - padding * 2);
+
+      return { ...point, x, y };
+    });
+
+    return {
+      width,
+      height,
+      line: points.map((point) => `${point.x},${point.y}`).join(" "),
+      points,
+    };
+  }, [curve]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const stake = parseMoneyInput(form.stake);
@@ -522,20 +549,23 @@ export default function Home() {
             <aside className="grid gap-6">
               <section className="rounded-lg border border-[#d7dfd4] bg-white p-5 shadow-sm">
                 <h2 className="text-xl font-bold">Curva da banca</h2>
-                <div className="chart" aria-label="Curva de lucro acumulado">
+                <div className="line-chart" aria-label="Curva de lucro acumulado">
                   {curve.length === 0 ? (
                     <p>Feche apostas para ver a evolucao.</p>
                   ) : (
-                    curve.map((point, index) => {
-                      const max = Math.max(...curve.map((item) => Math.abs(item.balance)), 1);
-                      const height = Math.max(8, (Math.abs(point.balance) / max) * 120);
-                      return (
-                        <div className="bar-wrap" key={`${point.label}-${index}`}>
-                          <span className={point.balance >= 0 ? "bar positive-bar" : "bar negative-bar"} style={{ height }} />
-                          <small>{point.label}</small>
-                        </div>
-                      );
-                    })
+                    <svg
+                      viewBox={`0 0 ${curveChart.width} ${curveChart.height}`}
+                      role="img"
+                      aria-label="Linha da curva de lucro acumulado"
+                    >
+                      <polyline className="curve-line" points={curveChart.line} />
+                      {curveChart.points.map((point, index) => (
+                        <g key={`${point.label}-${index}`}>
+                          <circle className="curve-dot" cx={point.x} cy={point.y} r="4" />
+                          <title>{`${point.label}: ${currency.format(point.balance)}`}</title>
+                        </g>
+                      ))}
+                    </svg>
                   )}
                 </div>
               </section>

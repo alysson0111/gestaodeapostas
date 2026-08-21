@@ -424,46 +424,84 @@ td span {
   color: #4e5b63;
 }
 
-.chart {
-  display: flex;
-  align-items: end;
-  gap: 0.65rem;
-  min-height: 142px;
-  margin-top: 0.8rem;
-  border-left: 1px solid #d7dfd4;
-  border-bottom: 1px solid #d7dfd4;
-  padding: 1rem 0.5rem 0.5rem;
-}
-
-.chart p {
-  align-self: center;
-  color: #718077;
-}
-
-.bar-wrap {
+.line-chart {
+  position: relative;
   display: grid;
-  min-width: 34px;
-  justify-items: center;
-  gap: 0.4rem;
+  min-height: 238px;
+  margin-top: 0.8rem;
+  overflow: hidden;
+  place-items: center;
+  border-top: 4px solid #0a0d0b;
+  border-left: 4px solid #0a0d0b;
+  border-bottom: 4px solid #0a0d0b;
+  border-radius: 16px 16px 16px 8px;
+  background-color: #f5f7f4;
+  background-image:
+    linear-gradient(#c1c7c0 1px, transparent 1px),
+    linear-gradient(90deg, #c1c7c0 1px, transparent 1px);
+  background-size: 17px 17px;
 }
 
-.bar {
-  width: 18px;
-  min-height: 8px;
-  border-radius: 5px 5px 0 0;
+.line-chart::before,
+.line-chart::after {
+  content: "";
+  position: absolute;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ff6a1a 0,
+    #ff6a1a 2px,
+    transparent 2px,
+    transparent 17px
+  );
+  pointer-events: none;
 }
 
-.positive-bar {
-  background: #2f9368;
+.line-chart::before {
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
 }
 
-.negative-bar {
-  background: #d55050;
+.line-chart::after {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 8px;
+  background: repeating-linear-gradient(
+    to right,
+    #ff6a1a 0,
+    #ff6a1a 2px,
+    transparent 2px,
+    transparent 17px
+  );
 }
 
-.bar-wrap small {
-  color: #748079;
-  font-size: 0.72rem;
+.line-chart p {
+  color: #718077;
+  text-align: center;
+}
+
+.line-chart svg {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 310px);
+  height: 220px;
+  overflow: visible;
+}
+
+.curve-line {
+  fill: none;
+  stroke: #ff6a1a;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.curve-dot {
+  fill: #ff6a1a;
+  stroke: #ff6a1a;
+  stroke-width: 2;
 }
 
 .type-list {
