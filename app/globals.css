@@ -17,23 +17,34 @@
 }
 
 html {
+  height: 100%;
   background: var(--background);
 }
 
 body {
+  height: 100%;
   margin: 0;
+  overflow: hidden;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .app-shell {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  flex-direction: column;
   background:
     linear-gradient(180deg, #f7faf5 0, #eef3ed 210px),
     #eef3ed;
 }
 
 .top-strip {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  flex-shrink: 0;
   border-bottom: 1px solid #d5ddd1;
   background: rgba(250, 252, 248, 0.94);
 }
@@ -60,6 +71,38 @@ body {
   margin-left: 0;
   margin-right: auto;
   width: 100%;
+}
+
+.dashboard-grid {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bet-form {
+  align-self: start;
+}
+
+.bets-content,
+.main-content-grid,
+.bets-panel {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.main-content-grid {
+  height: 100%;
+}
+
+.bets-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 button,
@@ -121,6 +164,9 @@ td {
 }
 
 th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   background: #f7f9f3;
   color: #66746b;
   font-size: 0.66rem;
@@ -533,6 +579,26 @@ td span {
 }
 
 @media (max-width: 720px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .dashboard-grid,
+  .bets-content,
+  .main-content-grid,
+  .bets-panel {
+    overflow: visible;
+  }
+
+  .table-scroll {
+    max-height: 60vh;
+  }
+
   .top-metrics {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
     justify-content: stretch;

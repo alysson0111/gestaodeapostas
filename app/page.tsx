@@ -475,9 +475,9 @@ export default function Home() {
           </div>
         </form>
 
-        <div className="grid gap-6">
-          <div className="grid gap-6 xl:grid-cols-[1fr_330px]">
-            <section className="rounded-lg border border-[#d7dfd4] bg-white shadow-sm">
+        <div className="bets-content grid gap-6">
+          <div className="main-content-grid grid gap-6 xl:grid-cols-[1fr_330px]">
+            <section className="bets-panel rounded-lg border border-[#d7dfd4] bg-white shadow-sm">
               <div className="flex flex-col gap-3 border-b border-[#e3e8df] p-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <h2 className="text-xl font-bold">Apostas cadastradas</h2>
@@ -496,7 +496,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="table-scroll overflow-x-auto">
                 <table>
                   <thead>
                     <tr>
