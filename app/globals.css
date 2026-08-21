@@ -305,24 +305,24 @@ td span {
 }
 
 .top-metrics {
-  grid-template-columns: repeat(9, minmax(66px, 1fr));
-  width: min(100%, 800px);
+  grid-template-columns: repeat(12, minmax(58px, 1fr));
+  width: min(100%, 930px);
   gap: 0.32rem;
   justify-content: end;
 }
 
 .top-metrics .rounded-lg:has(> p + strong) {
   min-height: 38px;
-  padding: 0.28rem 0.42rem;
+  padding: 0.26rem 0.34rem;
 }
 
 .top-metrics .rounded-lg > p:first-child {
-  font-size: 0.48rem;
-  letter-spacing: 0.16em;
+  font-size: 0.45rem;
+  letter-spacing: 0.12em;
 }
 
 .top-metrics .rounded-lg strong {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
 }
 
 .rounded-lg strong {

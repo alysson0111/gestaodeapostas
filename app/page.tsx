@@ -244,6 +244,9 @@ export default function Home() {
     return {
       total: bets.length,
       pending: bets.filter((bet) => bet.status === "pending").length,
+      green: bets.filter((bet) => bet.status === "won").length,
+      red: bets.filter((bet) => bet.status === "lost").length,
+      push: bets.filter((bet) => bet.status === "void").length,
       invested,
       profit,
       roi: invested > 0 ? profit / invested : 0,
@@ -376,6 +379,9 @@ export default function Home() {
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
             <Metric label="Abertas" value={String(metrics.pending)} />
+            <Metric label="Green" value={String(metrics.green)} tone="good" />
+            <Metric label="Red" value={String(metrics.red)} tone="bad" />
+            <Metric label="Push" value={String(metrics.push)} />
             <Metric label="Investido" value={currency.format(metrics.invested)} />
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
