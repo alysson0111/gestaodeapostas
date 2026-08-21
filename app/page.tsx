@@ -278,13 +278,15 @@ export default function Home() {
 
   const curve = useMemo(() => {
     let balance = 0;
-    return [...bets]
+    const settledCurve = [...bets]
       .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
       .filter((bet) => bet.status !== "pending")
       .map((bet) => {
         balance += profitForBet(bet);
         return { label: bet.date.slice(5), balance };
       });
+
+    return settledCurve.length > 0 ? [{ label: "0", balance: 0 }, ...settledCurve] : [];
   }, [bets]);
 
   const curveChart = useMemo(() => {
