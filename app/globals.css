@@ -73,6 +73,10 @@ body {
   width: 100%;
 }
 
+.content-left.max-w-7xl {
+  max-width: none;
+}
+
 .dashboard-grid {
   flex: 1;
   min-height: 0;
@@ -87,6 +91,7 @@ body {
 .main-content-grid,
 .bets-panel {
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -151,7 +156,7 @@ input[readonly] {
 
 table {
   width: 100%;
-  min-width: 860px;
+  min-width: 780px;
   border-collapse: collapse;
 }
 
@@ -473,7 +478,7 @@ td span {
 .line-chart {
   position: relative;
   display: grid;
-  min-height: 238px;
+  min-height: 214px;
   margin-top: 0.8rem;
   overflow: hidden;
   place-items: center;
@@ -531,8 +536,8 @@ td span {
 .line-chart svg {
   position: relative;
   z-index: 1;
-  width: min(100%, 310px);
-  height: 220px;
+  width: min(100%, 290px);
+  height: 198px;
   overflow: visible;
 }
 
@@ -576,6 +581,18 @@ td span {
   padding: 2rem;
   text-align: center;
   color: #718077;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .main-content-grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
 }
 
 @media (max-width: 720px) {
