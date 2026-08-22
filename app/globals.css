@@ -355,9 +355,57 @@ td span {
   align-items: start;
 }
 
+.top-summary {
+  display: flex;
+  width: min(100%, 1120px);
+  margin-left: auto;
+  align-items: start;
+  justify-content: flex-end;
+  gap: 0.38rem;
+}
+
+.bankroll-card {
+  min-height: 38px;
+  width: 104px;
+  flex: 0 0 104px;
+  border: 1px solid #dbe4d7;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.24rem 0.34rem;
+  box-shadow: 0 2px 7px rgba(20, 34, 29, 0.12);
+}
+
+.bankroll-card p {
+  margin: 0;
+  color: #6f7f74;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.bankroll-card input {
+  min-height: 18px;
+  margin-top: 0.08rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #14221d;
+  padding: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.bankroll-card input:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .top-metrics {
-  grid-template-columns: repeat(12, minmax(58px, 1fr));
-  width: min(100%, 930px);
+  grid-template-columns: repeat(13, minmax(54px, 1fr));
+  width: min(100%, 980px);
   gap: 0.32rem;
   justify-content: end;
 }
@@ -606,6 +654,15 @@ td span {
   .top-metrics {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
     justify-content: stretch;
+  }
+
+  .top-summary {
+    flex-direction: column;
+  }
+
+  .bankroll-card {
+    width: 100%;
+    flex-basis: auto;
   }
 
   th,

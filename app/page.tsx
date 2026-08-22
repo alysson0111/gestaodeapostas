@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useMemo, useState } from "react";
 import {
   collection,
   deleteDoc,
@@ -191,9 +191,37 @@ function formFromBet(bet: Bet) {
 export default function Home() {
   const [bets, setBets] = useState<Bet[]>(initialBets);
   const [form, setForm] = useState(emptyForm);
+  const [initialBankroll, setInitialBankroll] = useState(0);
+  const [bankrollInput, setBankrollInput] = useState("0,00");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | BetStatus>("all");
   const [typeFilter, setTypeFilter] = useState("Todos");
+
+  useEffect(() => {
+    const savedBankroll = window.localStorage.getItem("bet-control-bankroll");
+    if (savedBankroll) {
+      const parsedBankroll = Number(savedBankroll);
+      if (Number.isFinite(parsedBankroll)) {
+        setInitialBankroll(parsedBankroll);
+        setBankrollInput(parsedBankroll.toFixed(2).replace(".", ","));
+      }
+    }
+
+    const unsubscribe = onSnapshot(
+      doc(db, "settings", "bankroll"),
+      (snapshot) => {
+        const data = snapshot.data() as { initialBankroll?: number } | undefined;
+        if (typeof data?.initialBankroll !== "number") return;
+
+        setInitialBankroll(data.initialBankroll);
+        setBankrollInput(data.initialBankroll.toFixed(2).replace(".", ","));
+        window.localStorage.setItem("bet-control-bankroll", String(data.initialBankroll));
+      },
+      () => undefined,
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("bet-control-records");
@@ -286,8 +314,9 @@ export default function Home() {
       averageOdd,
       averageStake,
       settled: settled.length,
+      currentBankroll: initialBankroll + profit,
     };
-  }, [bets]);
+  }, [bets, initialBankroll]);
 
   const byType = useMemo(() => {
     const groups = new Map<string, { type: string; stake: number; profit: number; count: number }>();
@@ -309,7 +338,7 @@ export default function Home() {
   }, [bets]);
 
   const curve = useMemo(() => {
-    let balance = 0;
+    let balance = initialBankroll;
     const settledCurve = sortByInsertionOrder(bets)
       .filter((bet) => bet.status !== "pending")
       .map((bet) => {
@@ -317,8 +346,30 @@ export default function Home() {
         return { label: bet.date.slice(5), balance };
       });
 
-    return settledCurve.length > 0 ? [{ label: "0", balance: 0 }, ...settledCurve] : [];
-  }, [bets]);
+    return settledCurve.length > 0
+      ? [{ label: "0", balance: initialBankroll }, ...settledCurve]
+      : [];
+  }, [bets, initialBankroll]);
+
+  function saveInitialBankroll() {
+    const nextBankroll = parseMoneyInput(bankrollInput);
+    if (!Number.isFinite(nextBankroll) || nextBankroll < 0) {
+      setBankrollInput(initialBankroll.toFixed(2).replace(".", ","));
+      return;
+    }
+
+    setInitialBankroll(nextBankroll);
+    setBankrollInput(nextBankroll.toFixed(2).replace(".", ","));
+    window.localStorage.setItem("bet-control-bankroll", String(nextBankroll));
+    void setDoc(doc(db, "settings", "bankroll"), { initialBankroll: nextBankroll }, { merge: true });
+  }
+
+  function handleBankrollKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      event.currentTarget.blur();
+    }
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -408,7 +459,21 @@ export default function Home() {
             <h1>Gestao de banca</h1>
           </div>
 
-          <div className="metric-grid top-metrics">
+          <div className="top-summary">
+            <div className="bankroll-card">
+              <p>Banca inicial</p>
+              <input
+                aria-label="Banca inicial"
+                inputMode="decimal"
+                pattern="[0-9.,]*"
+                value={bankrollInput}
+                onBlur={saveInitialBankroll}
+                onChange={(event) => setBankrollInput(event.target.value)}
+                onKeyDown={handleBankrollKeyDown}
+              />
+            </div>
+            <div className="metric-grid top-metrics">
+              <Metric label="Banca atual" value={currency.format(metrics.currentBankroll)} tone={metrics.currentBankroll >= initialBankroll ? "good" : "bad"} />
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
@@ -421,6 +486,7 @@ export default function Home() {
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
             <Metric label="Resolvidas" value={String(metrics.settled)} />
             <Metric label="Stake media" value={currency.format(metrics.averageStake)} />
+            </div>
           </div>
         </div>
       </section>
