@@ -139,8 +139,12 @@ function emptyForm() {
   };
 }
 
-function sortByInsertionOrder(list: Bet[]) {
+function sortByOldestFirst(list: Bet[]) {
   return [...list].sort((a, b) => a.createdAt - b.createdAt);
+}
+
+function sortByNewestFirst(list: Bet[]) {
+  return [...list].sort((a, b) => b.createdAt - a.createdAt);
 }
 
 function normalizeBet(data: Partial<Bet>, id: string, fallbackCreatedAt = Date.now()): Bet {
@@ -237,7 +241,7 @@ export default function Home() {
         const remoteBets = snapshot.docs.map((document, index) =>
           normalizeBet(document.data() as Partial<Bet>, document.id, index + 1),
         );
-        const orderedRemoteBets = sortByInsertionOrder(remoteBets);
+        const orderedRemoteBets = sortByNewestFirst(remoteBets);
 
         const missingOrder = snapshot.docs.some(
           (document) => typeof (document.data() as Partial<Bet>).createdAt !== "number",
@@ -259,7 +263,7 @@ export default function Home() {
             batch.set(doc(db, "bets", bet.id), bet);
           });
           await batch.commit();
-          setBets(sortByInsertionOrder(savedBets));
+          setBets(sortByNewestFirst(savedBets));
           return;
         }
 
@@ -267,7 +271,7 @@ export default function Home() {
         window.localStorage.setItem("bet-control-records", JSON.stringify(orderedRemoteBets));
       },
       () => {
-        if (savedBets.length > 0) setBets(sortByInsertionOrder(savedBets));
+        if (savedBets.length > 0) setBets(sortByNewestFirst(savedBets));
       },
     );
 
@@ -339,7 +343,7 @@ export default function Home() {
 
   const curve = useMemo(() => {
     let balance = initialBankroll;
-    const settledCurve = sortByInsertionOrder(bets)
+    const settledCurve = sortByOldestFirst(bets)
       .filter((bet) => bet.status !== "pending")
       .map((bet) => {
         balance += profitForBet(bet);
@@ -402,7 +406,7 @@ export default function Home() {
     setBets((current) =>
       editingId
         ? current.map((bet) => (bet.id === editingId ? savedBet : bet))
-        : [...current, savedBet],
+        : [savedBet, ...current],
     );
     void setDoc(doc(db, "bets", savedBet.id), savedBet);
     setEditingId(null);
