@@ -36,7 +36,7 @@ body {
   min-height: 0;
   flex-direction: column;
   background:
-    linear-gradient(180deg, #f7faf5 0, #eef3ed 210px),
+    linear-gradient(180deg, #e8f1e4 0, #eef3ed 210px),
     #eef3ed;
 }
 
@@ -46,7 +46,7 @@ body {
   z-index: 20;
   flex-shrink: 0;
   border-bottom: 1px solid #d5ddd1;
-  background: rgba(250, 252, 248, 0.94);
+  background: #e8f1e4;
 }
 
 .top-strip h1 {
