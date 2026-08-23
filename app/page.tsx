@@ -577,7 +577,6 @@ export default function Home() {
                     <tr>
                       <th>Data</th>
                       <th>Evento</th>
-                      <th>Bilhete</th>
                       <th>Tipo</th>
                       <th>Odd</th>
                       <th>Stake</th>
@@ -593,9 +592,6 @@ export default function Home() {
                         <td>
                           <strong className="event-name">{bet.event}</strong>
                           <span>{bet.market}</span>
-                        </td>
-                        <td>
-                          <TicketDetails bet={bet} />
                         </td>
                         <td>{bet.type}</td>
                         <td>{bet.odd.toFixed(2)}</td>
@@ -615,7 +611,7 @@ export default function Home() {
                     ))}
                     {filteredBets.length === 0 && (
                       <tr>
-                        <td colSpan={9} className="empty-state">Nenhuma aposta encontrada para os filtros atuais.</td>
+                        <td colSpan={8} className="empty-state">Nenhuma aposta encontrada para os filtros atuais.</td>
                       </tr>
                     )}
                   </tbody>
