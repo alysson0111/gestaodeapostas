@@ -583,7 +583,7 @@ export default function Home() {
                       <th>Stake</th>
                       <th>Resultado</th>
                       <th>Lucro</th>
-                      <th>Acoes</th>
+                      <th className="actions-cell">Acoes</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -602,13 +602,13 @@ export default function Home() {
                         <td>{currency.format(bet.stake)}</td>
                         <td><StatusBadge status={bet.status} /></td>
                         <td className={profitForBet(bet) >= 0 ? "positive" : "negative"}>{currency.format(profitForBet(bet))}</td>
-                        <td>
+                        <td className="actions-cell">
                           <div className="row-actions">
                             <button onClick={() => startEdit(bet)} aria-label="Editar">E</button>
                             <button onClick={() => updateStatus(bet.id, "won")} aria-label="Marcar green">G</button>
                             <button onClick={() => updateStatus(bet.id, "lost")} aria-label="Marcar red">R</button>
                             <button onClick={() => updateStatus(bet.id, "void")} aria-label="Marcar push">P</button>
-                            <button onClick={() => removeBet(bet.id)} aria-label="Excluir">x</button>
+                            <button className="delete-action" onClick={() => removeBet(bet.id)} aria-label="Excluir">Excluir</button>
                           </div>
                         </td>
                       </tr>

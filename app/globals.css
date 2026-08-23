@@ -156,7 +156,7 @@ input[readonly] {
 
 table {
   width: 100%;
-  min-width: 780px;
+  min-width: 920px;
   border-collapse: collapse;
 }
 
@@ -327,7 +327,9 @@ td span {
 
 .row-actions {
   display: flex;
+  min-width: 188px;
   gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .row-actions button {
@@ -336,6 +338,19 @@ td span {
   background: #eef3ea;
   color: #2f463b;
   font-size: 0.75rem;
+}
+
+.row-actions .delete-action {
+  width: auto;
+  min-width: 58px;
+  padding: 0 0.48rem;
+  background: #fde8e8;
+  color: #be3434;
+}
+
+.actions-cell {
+  width: 200px;
+  min-width: 200px;
 }
 
 .metric-good,
