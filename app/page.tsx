@@ -297,7 +297,7 @@ export default function Home() {
     const settled = bets.filter((bet) => bet.status === "won" || bet.status === "lost" || bet.status === "void");
     const invested = settled.reduce((sum, bet) => sum + bet.stake, 0);
     const settledProfit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
-    const currentBankroll = settledProfit - initialBankroll;
+    const currentBankroll = initialBankroll + settledProfit;
     const profit = currentBankroll - initialBankroll;
     const wins = settled.filter((bet) => bet.status === "won").length;
     const averageStake =
