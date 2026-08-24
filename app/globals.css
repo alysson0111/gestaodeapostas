@@ -372,28 +372,30 @@ td span {
 
 .top-summary {
   display: flex;
-  width: min(100%, 1120px);
-  margin-left: auto;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  margin-left: 1rem;
   align-items: start;
   justify-content: flex-end;
-  gap: 0.38rem;
+  gap: 0.5rem;
 }
 
 .bankroll-card {
-  min-height: 38px;
-  width: 104px;
-  flex: 0 0 104px;
+  min-height: 46px;
+  width: 128px;
+  flex: 0 0 128px;
   border: 1px solid #dbe4d7;
   border-radius: 8px;
   background: #ffffff;
-  padding: 0.24rem 0.34rem;
+  padding: 0.34rem 0.48rem;
   box-shadow: 0 2px 7px rgba(20, 34, 29, 0.12);
 }
 
 .bankroll-card p {
   margin: 0;
   color: #6f7f74;
-  font-size: 0.45rem;
+  font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   line-height: 1;
@@ -401,14 +403,14 @@ td span {
 }
 
 .bankroll-card input {
-  min-height: 18px;
-  margin-top: 0.08rem;
+  min-height: 22px;
+  margin-top: 0.1rem;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: #14221d;
   padding: 0;
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   font-weight: 800;
   line-height: 1.1;
 }
@@ -419,24 +421,26 @@ td span {
 }
 
 .top-metrics {
-  grid-template-columns: repeat(13, minmax(54px, 1fr));
-  width: min(100%, 980px);
-  gap: 0.32rem;
-  justify-content: end;
+  flex: 1;
+  grid-template-columns: repeat(13, minmax(74px, 1fr));
+  width: 100%;
+  min-width: 0;
+  gap: 0.5rem;
+  justify-content: stretch;
 }
 
 .top-metrics .rounded-lg:has(> p + strong) {
-  min-height: 38px;
-  padding: 0.26rem 0.34rem;
+  min-height: 46px;
+  padding: 0.34rem 0.48rem;
 }
 
 .top-metrics .rounded-lg > p:first-child {
-  font-size: 0.45rem;
+  font-size: 0.5rem;
   letter-spacing: 0.12em;
 }
 
 .top-metrics .rounded-lg strong {
-  font-size: 0.72rem;
+  font-size: 0.86rem;
 }
 
 .rounded-lg strong {
