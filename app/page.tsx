@@ -299,7 +299,9 @@ export default function Home() {
     const openStake = bets
       .filter((bet) => bet.status === "pending")
       .reduce((sum, bet) => sum + bet.stake, 0);
-    const profit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
+    const settledProfit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
+    const currentBankroll = initialBankroll + settledProfit - openStake;
+    const profit = currentBankroll - initialBankroll;
     const wins = settled.filter((bet) => bet.status === "won").length;
     const averageStake =
       bets.length > 0 ? bets.reduce((sum, bet) => sum + bet.stake, 0) / bets.length : 0;
@@ -321,7 +323,7 @@ export default function Home() {
       averageOdd,
       averageStake,
       settled: settled.length,
-      currentBankroll: initialBankroll + profit - openStake,
+      currentBankroll,
     };
   }, [bets, initialBankroll]);
 
