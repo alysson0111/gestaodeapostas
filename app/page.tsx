@@ -115,7 +115,7 @@ const initialBets: Bet[] = [
 function profitForBet(bet: Bet) {
   if (bet.status === "won") return bet.stake * (bet.odd - 1);
   if (bet.status === "lost") return -bet.stake;
-  if (bet.status === "void") return (bet.cashout ?? bet.stake) - bet.stake;
+  if (bet.status === "void") return bet.cashout ?? bet.stake;
   return 0;
 }
 
