@@ -296,9 +296,6 @@ export default function Home() {
   const metrics = useMemo(() => {
     const settled = bets.filter((bet) => bet.status === "won" || bet.status === "lost" || bet.status === "void");
     const invested = settled.reduce((sum, bet) => sum + bet.stake, 0);
-    const openStake = bets
-      .filter((bet) => bet.status === "pending")
-      .reduce((sum, bet) => sum + bet.stake, 0);
     const profit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
     const wins = settled.filter((bet) => bet.status === "won").length;
     const averageStake =
@@ -321,7 +318,7 @@ export default function Home() {
       averageOdd,
       averageStake,
       settled: settled.length,
-      currentBankroll: initialBankroll + profit - openStake,
+      currentBankroll: initialBankroll + profit,
     };
   }, [bets, initialBankroll]);
 
