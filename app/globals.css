@@ -382,20 +382,20 @@ td span {
 }
 
 .bankroll-card {
-  min-height: 46px;
-  width: 128px;
-  flex: 0 0 128px;
+  min-height: 42px;
+  width: 112px;
+  flex: 0 0 112px;
   border: 1px solid #dbe4d7;
   border-radius: 8px;
   background: #ffffff;
-  padding: 0.34rem 0.48rem;
+  padding: 0.28rem 0.4rem;
   box-shadow: 0 2px 7px rgba(20, 34, 29, 0.12);
 }
 
 .bankroll-card p {
   margin: 0;
   color: #6f7f74;
-  font-size: 0.5rem;
+  font-size: 0.46rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   line-height: 1;
@@ -403,14 +403,14 @@ td span {
 }
 
 .bankroll-card input {
-  min-height: 22px;
+  min-height: 20px;
   margin-top: 0.1rem;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: #14221d;
   padding: 0;
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 800;
   line-height: 1.1;
 }
