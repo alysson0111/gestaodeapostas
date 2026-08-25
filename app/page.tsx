@@ -319,6 +319,7 @@ export default function Home() {
       hitRate: settled.length > 0 ? wins / settled.length : 0,
       averageOdd,
       averageStake,
+      units: averageStake > 0 ? profit / averageStake : 0,
       settled: settled.length,
       currentBankroll,
     };
@@ -489,7 +490,7 @@ export default function Home() {
             <Metric className="invested-card" label="Investido" value={currency.format(metrics.invested)} />
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
-            <Metric label="Resolvidas" value={String(metrics.settled)} />
+            <Metric label="Unidades" value={metrics.units.toFixed(2).replace(".", ",")} tone={metrics.units >= 0 ? "good" : "bad"} />
             <Metric label="Stake media" value={currency.format(metrics.averageStake)} />
             </div>
           </div>
