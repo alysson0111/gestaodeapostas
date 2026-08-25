@@ -443,8 +443,12 @@ td span {
   font-size: 0.86rem;
 }
 
-.top-metrics .invested-card {
+.top-metrics .current-bankroll-card {
   grid-column: span 2;
+}
+
+.top-metrics .invested-card {
+  grid-column: auto;
 }
 
 .rounded-lg strong {
@@ -679,6 +683,7 @@ td span {
     justify-content: stretch;
   }
 
+  .top-metrics .current-bankroll-card,
   .top-metrics .invested-card {
     grid-column: auto;
   }

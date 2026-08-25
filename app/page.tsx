@@ -479,7 +479,7 @@ export default function Home() {
               />
             </div>
             <div className="metric-grid top-metrics">
-              <Metric label="Banca atual" value={currency.format(metrics.currentBankroll)} tone={metrics.currentBankroll >= initialBankroll ? "good" : "bad"} />
+              <Metric className="current-bankroll-card" label="Banca atual" value={currency.format(metrics.currentBankroll)} tone={metrics.currentBankroll >= initialBankroll ? "good" : "bad"} />
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
