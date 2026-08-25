@@ -443,6 +443,10 @@ td span {
   font-size: 0.86rem;
 }
 
+.top-metrics .invested-card {
+  grid-column: span 2;
+}
+
 .rounded-lg strong {
   display: block;
   margin-top: 0.12rem;
@@ -673,6 +677,10 @@ td span {
   .top-metrics {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
     justify-content: stretch;
+  }
+
+  .top-metrics .invested-card {
+    grid-column: auto;
   }
 
   .top-summary {

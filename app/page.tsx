@@ -483,11 +483,10 @@ export default function Home() {
             <Metric label="Lucro" value={currency.format(metrics.profit)} tone={metrics.profit >= 0 ? "good" : "bad"} />
             <Metric label="ROI" value={percent.format(metrics.roi)} tone={metrics.roi >= 0 ? "good" : "bad"} />
             <Metric label="Apostas" value={String(metrics.total)} />
-            <Metric label="Abertas" value={String(metrics.pending)} />
             <Metric label="Green" value={String(metrics.green)} tone="good" />
             <Metric label="Red" value={String(metrics.red)} tone="bad" />
             <Metric label="Push" value={String(metrics.push)} />
-            <Metric label="Investido" value={currency.format(metrics.invested)} />
+            <Metric className="invested-card" label="Investido" value={currency.format(metrics.invested)} />
             <Metric label="Acerto" value={percent.format(metrics.hitRate)} />
             <Metric label="Odd media" value={metrics.averageOdd.toFixed(2)} />
             <Metric label="Resolvidas" value={String(metrics.settled)} />
@@ -686,9 +685,19 @@ export default function Home() {
   );
 }
 
-function Metric({ label, value, tone }: { label: string; value: string; tone?: "good" | "bad" }) {
+function Metric({
+  label,
+  value,
+  tone,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  tone?: "good" | "bad";
+  className?: string;
+}) {
   return (
-    <div className="rounded-lg border border-[#dbe4d7] bg-white p-4 shadow-sm">
+    <div className={`rounded-lg border border-[#dbe4d7] bg-white p-4 shadow-sm ${className}`}>
       <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#6f7f74]">{label}</p>
       <strong className={tone === "good" ? "metric-good" : tone === "bad" ? "metric-bad" : ""}>
         {value}
