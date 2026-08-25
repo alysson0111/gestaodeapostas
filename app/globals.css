@@ -378,7 +378,7 @@ td span {
   margin-left: 1rem;
   align-items: start;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.42rem;
 }
 
 .bankroll-card {
@@ -422,16 +422,16 @@ td span {
 
 .top-metrics {
   flex: 1;
-  grid-template-columns: repeat(13, minmax(74px, 1fr));
+  grid-template-columns: repeat(13, minmax(68px, 1fr));
   width: 100%;
   min-width: 0;
-  gap: 0.5rem;
+  gap: 0.42rem;
   justify-content: stretch;
 }
 
 .top-metrics .rounded-lg:has(> p + strong) {
   min-height: 46px;
-  padding: 0.34rem 0.48rem;
+  padding: 0.32rem 0.42rem;
 }
 
 .top-metrics .rounded-lg > p:first-child {
@@ -440,7 +440,7 @@ td span {
 }
 
 .top-metrics .rounded-lg strong {
-  font-size: 0.86rem;
+  font-size: 0.82rem;
 }
 
 .top-metrics .current-bankroll-card {
@@ -449,6 +449,11 @@ td span {
 
 .top-metrics .invested-card {
   grid-column: auto;
+  min-width: 92px;
+}
+
+.top-metrics .invested-card strong {
+  white-space: nowrap;
 }
 
 .rounded-lg strong {
