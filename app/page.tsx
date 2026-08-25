@@ -147,8 +147,15 @@ function sortByNewestFirst(list: Bet[]) {
   return [...list].sort((a, b) => b.createdAt - a.createdAt);
 }
 
+function localDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function normalizeBet(data: Partial<Bet>, id: string, fallbackCreatedAt = Date.now()): Bet {
-  const fallbackDate = new Date().toISOString().slice(0, 10);
+  const fallbackDate = localDateString();
   const ticketKind = data.ticketKind === "multiple" ? "multiple" : "single";
   const event = data.event || "Aposta sem evento";
   const selectionDetails = Array.isArray(data.selectionDetails)
@@ -391,7 +398,7 @@ export default function Home() {
     const savedBet: Bet = {
       id: editingId ?? crypto.randomUUID(),
       createdAt: existingBet?.createdAt ?? Date.now(),
-      date: existingBet?.date ?? new Date().toISOString().slice(0, 10),
+      date: existingBet?.date ?? localDateString(),
       event: existingBet?.event && editingId ? existingBet.event : betType,
       ticketKind: isMultiple ? "multiple" : "single",
       selections: existingBet?.selections && editingId ? existingBet.selections : [betType],
