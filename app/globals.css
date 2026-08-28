@@ -560,59 +560,21 @@ td span {
 .line-chart {
   position: relative;
   display: grid;
-  height: 226px;
-  min-height: 214px;
+  height: 238px;
+  min-height: 220px;
   margin-top: 0.8rem;
   overflow: hidden;
   place-items: center;
-  border-top: 4px solid #0a0d0b;
-  border-left: 4px solid #0a0d0b;
-  border-bottom: 4px solid #0a0d0b;
-  border-radius: 16px 16px 16px 8px;
-  background-color: #f5f7f4;
-  background-image:
-    linear-gradient(#c1c7c0 1px, transparent 1px),
-    linear-gradient(90deg, #c1c7c0 1px, transparent 1px);
-  background-size: 17px 17px;
-}
-
-.line-chart::before,
-.line-chart::after {
-  content: "";
-  position: absolute;
-  background: repeating-linear-gradient(
-    to bottom,
-    #ff6a1a 0,
-    #ff6a1a 2px,
-    transparent 2px,
-    transparent 17px
-  );
-  pointer-events: none;
-}
-
-.line-chart::before {
-  left: 0;
-  top: 0;
-  width: 8px;
-  height: 100%;
-}
-
-.line-chart::after {
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 8px;
-  background: repeating-linear-gradient(
-    to right,
-    #ff6a1a 0,
-    #ff6a1a 2px,
-    transparent 2px,
-    transparent 17px
-  );
+  border: 1px solid #26344a;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(21, 33, 53, 0.92), rgba(12, 20, 36, 0.98)),
+    #111827;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .line-chart p {
-  color: #718077;
+  color: #aeb8c8;
   text-align: center;
 }
 
@@ -622,6 +584,10 @@ td span {
 
 .line-chart .recharts-surface {
   overflow: visible;
+}
+
+.line-chart .recharts-cartesian-grid-horizontal line {
+  stroke-opacity: 0.72;
 }
 
 .type-list {

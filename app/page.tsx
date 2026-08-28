@@ -10,9 +10,9 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -636,31 +636,47 @@ export default function Home() {
                     <p>Feche apostas para ver a evolucao.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={curve} margin={{ top: 18, right: 18, bottom: 18, left: 18 }}>
-                        <CartesianGrid stroke="#bcc4ba" strokeWidth={1} />
+                      <AreaChart data={curve} margin={{ top: 24, right: 18, bottom: 12, left: 10 }}>
+                        <defs>
+                          <linearGradient id="bankrollCurveFill" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#4edfc2" stopOpacity={0.34} />
+                            <stop offset="100%" stopColor="#4edfc2" stopOpacity={0.08} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid vertical={false} stroke="#253249" strokeWidth={1} />
                         <XAxis dataKey="label" hide />
-                        <YAxis hide domain={["auto", "auto"]} />
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fill: "#aeb8c8", fontSize: 12 }}
+                          tickFormatter={(value) => `${Number(value).toFixed(0)} R$`}
+                          width={58}
+                          domain={["auto", "auto"]}
+                        />
                         <Tooltip
-                          cursor={{ stroke: "#ff6a1a", strokeWidth: 1 }}
+                          cursor={{ stroke: "#4edfc2", strokeWidth: 1, strokeDasharray: "4 4" }}
                           formatter={(value) => [currency.format(Number(value)), "Banca"]}
                           labelFormatter={(label) => (label === "0" ? "Inicio" : `Data ${label}`)}
                           contentStyle={{
-                            border: "1px solid #d7dfd4",
+                            background: "#0f1728",
+                            color: "#eef7f5",
+                            border: "1px solid #2d3a52",
                             borderRadius: 8,
-                            boxShadow: "0 10px 20px rgba(20, 34, 29, 0.12)",
+                            boxShadow: "0 14px 26px rgba(3, 9, 20, 0.28)",
                             fontSize: 12,
                           }}
                         />
-                        <Line
-                          type="monotone"
+                        <Area
+                          type="natural"
                           dataKey="balance"
-                          stroke="#ff6a1a"
+                          stroke="#4edfc2"
                           strokeWidth={3}
-                          dot={{ r: 5, fill: "#ff6a1a", stroke: "#ff6a1a", strokeWidth: 2 }}
-                          activeDot={{ r: 7, fill: "#ff6a1a", stroke: "#ffffff", strokeWidth: 2 }}
+                          fill="url(#bankrollCurveFill)"
+                          dot={false}
+                          activeDot={{ r: 5, fill: "#4edfc2", stroke: "#0f1728", strokeWidth: 2 }}
                           isAnimationActive={false}
                         />
-                      </LineChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   )}
                 </div>
