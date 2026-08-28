@@ -305,7 +305,7 @@ export default function Home() {
     const invested = settled.reduce((sum, bet) => sum + bet.stake, 0);
     const settledProfit = settled.reduce((sum, bet) => sum + profitForBet(bet), 0);
     const currentBankroll = settledProfit;
-    const profit = currentBankroll - initialBankroll;
+    const profit = settledProfit;
     const wins = settled.filter((bet) => bet.status === "won").length;
     const averageStake =
       bets.length > 0 ? bets.reduce((sum, bet) => sum + bet.stake, 0) / bets.length : 0;
@@ -322,7 +322,7 @@ export default function Home() {
       push: bets.filter((bet) => bet.status === "void").length,
       invested,
       profit,
-      roi: invested > 0 ? profit / invested : 0,
+      roi: invested > 0 ? settledProfit / invested : 0,
       hitRate: settled.length > 0 ? wins / settled.length : 0,
       averageOdd,
       averageStake,
