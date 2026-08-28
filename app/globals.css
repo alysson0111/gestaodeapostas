@@ -590,28 +590,6 @@ td span {
   stroke-opacity: 0.72;
 }
 
-.type-list {
-  display: grid;
-  gap: 0.55rem;
-  margin-top: 0.8rem;
-}
-
-.type-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  border: 1px solid #e2e8de;
-  border-radius: 8px;
-  padding: 0.62rem;
-}
-
-.type-row span {
-  display: block;
-  color: #77837c;
-  font-size: 0.82rem;
-}
-
 .empty-state {
   padding: 2rem;
   text-align: center;

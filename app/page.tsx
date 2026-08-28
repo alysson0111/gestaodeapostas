@@ -332,25 +332,6 @@ export default function Home() {
     };
   }, [bets, initialBankroll]);
 
-  const byType = useMemo(() => {
-    const groups = new Map<string, { type: string; stake: number; profit: number; count: number }>();
-    bets.forEach((bet) => {
-      const current = groups.get(bet.type) ?? {
-        type: bet.type,
-        stake: 0,
-        profit: 0,
-        count: 0,
-      };
-      if (bet.status === "won" || bet.status === "lost" || bet.status === "void") {
-        current.stake += bet.stake;
-        current.profit += profitForBet(bet);
-      }
-      current.count += 1;
-      groups.set(bet.type, current);
-    });
-    return Array.from(groups.values()).sort((a, b) => b.profit - a.profit);
-  }, [bets]);
-
   const curve = useMemo(() => {
     let balance = initialBankroll;
     const settledCurve = sortByOldestFirst(bets)
@@ -682,25 +663,6 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="rounded-lg border border-[#d7dfd4] bg-white p-5 shadow-sm">
-                <h2 className="text-xl font-bold">ROI por tipo</h2>
-                <div className="type-list">
-                  {byType.map((item) => {
-                    const roi = item.stake > 0 ? item.profit / item.stake : 0;
-                    return (
-                      <div key={item.type} className="type-row">
-                        <div>
-                          <strong>{item.type}</strong>
-                          <span>{item.count} apostas</span>
-                        </div>
-                        <div className={roi >= 0 ? "positive" : "negative"}>
-                          {percent.format(roi)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
             </aside>
           </div>
         </div>
