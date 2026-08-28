@@ -346,6 +346,30 @@ export default function Home() {
       : [];
   }, [bets, initialBankroll]);
 
+  const dailyResults = useMemo(() => {
+    const groups = new Map<string, { date: string; profit: number; count: number }>();
+
+    bets
+      .filter((bet) => bet.status !== "pending")
+      .forEach((bet) => {
+        const current = groups.get(bet.date) ?? { date: bet.date, profit: 0, count: 0 };
+        current.profit += profitForBet(bet);
+        current.count += 1;
+        groups.set(bet.date, current);
+      });
+
+    const days = Array.from(groups.values())
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 7);
+    const biggestResult = Math.max(...days.map((day) => Math.abs(day.profit)), 1);
+
+    return days.map((day) => ({
+      ...day,
+      label: day.date.split("-").reverse().slice(0, 2).join("/"),
+      barWidth: `${Math.max((Math.abs(day.profit) / biggestResult) * 100, 4)}%`,
+    }));
+  }, [bets]);
+
   function saveInitialBankroll() {
     const nextBankroll = parseMoneyInput(bankrollInput);
     if (!Number.isFinite(nextBankroll) || nextBankroll < 0) {
@@ -659,6 +683,33 @@ export default function Home() {
                         />
                       </AreaChart>
                     </ResponsiveContainer>
+                  )}
+                </div>
+              </section>
+
+              <section className="rounded-lg border border-[#d7dfd4] bg-white p-5 shadow-sm">
+                <h2 className="text-xl font-bold">Ganhos / perdas</h2>
+                <div className="daily-results">
+                  {dailyResults.length === 0 ? (
+                    <p>Feche apostas para ver os ultimos dias.</p>
+                  ) : (
+                    dailyResults.map((day) => (
+                      <div key={day.date} className="daily-row">
+                        <div className="daily-row-head">
+                          <strong>{day.label}</strong>
+                          <span>{day.count} apostas</span>
+                          <b className={day.profit >= 0 ? "positive" : "negative"}>
+                            {currency.format(day.profit)}
+                          </b>
+                        </div>
+                        <div className="daily-bar-track">
+                          <span
+                            className={day.profit >= 0 ? "daily-bar positive-bar" : "daily-bar negative-bar"}
+                            style={{ width: day.barWidth }}
+                          />
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
               </section>

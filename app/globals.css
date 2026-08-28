@@ -590,6 +590,70 @@ td span {
   stroke-opacity: 0.72;
 }
 
+.daily-results {
+  display: grid;
+  gap: 0.58rem;
+  margin-top: 0.85rem;
+}
+
+.daily-results > p {
+  color: #718077;
+  font-size: 0.86rem;
+}
+
+.daily-row {
+  display: grid;
+  gap: 0.36rem;
+  border: 1px solid #e2e8de;
+  border-radius: 8px;
+  padding: 0.58rem 0.62rem;
+}
+
+.daily-row-head {
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.daily-row-head strong {
+  color: #17231f;
+  font-size: 0.88rem;
+  line-height: 1;
+}
+
+.daily-row-head span {
+  color: #77837c;
+  font-size: 0.74rem;
+}
+
+.daily-row-head b {
+  font-size: 0.84rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.daily-bar-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef3ea;
+}
+
+.daily-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.positive-bar {
+  background: linear-gradient(90deg, #2f9c68, #4edfc2);
+}
+
+.negative-bar {
+  background: linear-gradient(90deg, #d45656, #ff9a8d);
+}
+
 .empty-state {
   padding: 2rem;
   text-align: center;
